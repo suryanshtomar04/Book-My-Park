@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getUserBookings } from '../services/api';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,6 +21,11 @@ export default function Dashboard() {
         setBookings(data);
         setError(null);
       } catch (err) {
+        if (err.response?.status === 401) {
+          logout();
+          navigate('/login', { replace: true });
+          return;
+        }
         console.error("Failed to fetch bookings:", err);
         setError("Failed to load your bookings. Please try again later.");
       } finally {
@@ -32,11 +38,13 @@ export default function Dashboard() {
     } else {
       setLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, logout, navigate]);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   // Helper to determine status based on end time vs now
   const getBookingStatus = (endTime) => {
@@ -95,9 +103,8 @@ export default function Dashboard() {
             {bookings.map((booking) => {
               const status = getBookingStatus(booking.endTime);
               const isActive = status === 'Active';
-              // If backend populates parkingId, it will be an object. Otherwise it might be just an ID string.
-              const parkingName = booking.parkingId?.title || booking.parkingName || 'Downtown Premium Garage';
-              const location = booking.parkingId?.location || booking.location || '123 Main Street, City Center';
+              const parkingName = booking.parkingId?.description?.substring(0, 40) || 'Premium Parking Spot';
+              const location = booking.parkingId?.location?.address || '123 Main Street, City Center';
 
               return (
                 <div 

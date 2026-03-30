@@ -1,5 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { createBooking } from '../services/api';
 
 export default function ParkingCard({ 
   id = 'preview', 
@@ -11,6 +13,40 @@ export default function ParkingCard({
   isActive = false,
   onClick
 }) {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const [loading, setLoading] = useState(false);
+
+  const handleBookNow = async (e) => {
+    e.stopPropagation();
+    
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    console.log("parkingId before booking:", id);
+
+    setLoading(true);
+    try {
+      const now = new Date();
+      const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+      
+      await createBooking({
+        parkingId: id,
+        startTime: now.toISOString(),
+        endTime: oneHourLater.toISOString(),
+      });
+
+      navigate('/dashboard');
+    } catch (err) {
+      console.error("Booking error:", err);
+      alert(err.response?.data?.message || 'Failed to complete booking.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div 
       onClick={onClick}
@@ -61,14 +97,17 @@ export default function ParkingCard({
             <span className="text-[14px] text-gray-500 font-medium">/ hour</span>
           </div>
           
-          <Link 
-            to={`/booking`} 
-            state={{ id, title, price, location, image }}
-            onClick={(e) => e.stopPropagation()} // Prevent card click when clicking book directly
-            className="px-6 py-2.5 bg-[#3b5cf2] hover:bg-[#2e47c7] text-white text-[14px] font-semibold rounded-[0.5rem] shadow-sm hover:shadow-md transition-all duration-300 focus:outline-none"
+          <button 
+            onClick={handleBookNow}
+            disabled={loading || availability?.toLowerCase() !== 'available'}
+            className={`px-6 py-2.5 text-white text-[14px] font-semibold rounded-[0.5rem] shadow-sm transition-all duration-300 focus:outline-none ${
+              loading || availability?.toLowerCase() !== 'available'
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-[#3b5cf2] hover:bg-[#2e47c7] hover:shadow-md'
+            }`}
           >
-            Book Now
-          </Link>
+            {loading ? 'Booking...' : 'Book Now'}
+          </button>
         </div>
       </div>
 

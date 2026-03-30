@@ -24,12 +24,14 @@ api.interceptors.request.use(
 );
 
 export const loginUser = async (credentials) => {
-  const response = await api.post('/users/login', credentials);
+  console.log('[API] POST /auth/login with credentials:', credentials.email);
+  const response = await api.post('/auth/login', credentials);
   return response.data;
 };
 
 export const registerUser = async (userData) => {
-  const response = await api.post('/users/register', userData);
+  console.log('[API] POST /auth/signup with payload:', userData.email);
+  const response = await api.post('/auth/signup', userData);
   return response.data;
 };
 
@@ -51,12 +53,14 @@ export const getParkingById = async (id) => {
 };
 
 export const createBooking = async (bookingData) => {
-  const response = await api.post('/bookings', bookingData);
+  console.log('[API] POST /booking with data:', bookingData);
+  const response = await api.post('/booking', bookingData);
   return response.data;
 };
 
 export const getUserBookings = async () => {
-  const response = await api.get('/bookings');
+  console.log('[API] GET /booking/my');
+  const response = await api.get('/booking/my');
   return response.data;
 };
 

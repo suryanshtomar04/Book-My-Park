@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
-import { useLocation, Navigate, Link } from 'react-router-dom';
+import { useLocation, Navigate, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { createBooking } from '../services/api';
 
 const Booking = () => {
   const routerState = useLocation().state;
+  const navigate = useNavigate();
 
   if (!routerState) {
     return <Navigate to="/explore" replace />;
@@ -15,7 +16,7 @@ const Booking = () => {
   const { user, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
 
   const [startDate, setStartDate] = useState('');
   const [startTime, setStartTime] = useState('');
@@ -73,10 +74,16 @@ const Booking = () => {
         endTime: formattedEndTime,
       });
 
-      setSuccess(true);
+      setSuccessMsg('Booking confirmed successfully! Redirecting to dashboard...');
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to complete booking. Please try again.');
     } finally {
+      // If we're successful, we keep the button disabled and loading state conceptually active during redirect
+      // but we still want to ensure loading spinner isn't stuck on error.
+      // Easiest is to set loading false but check successMsg for button disabled state.
       setLoading(false);
     }
   };
@@ -145,44 +152,13 @@ const Booking = () => {
                 {error}
               </div>
             )}
-
-            {success ? (
-              <div className="text-center py-6 px-2">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg className="w-8 h-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">Booking Confirmed!</h3>
-                <p className="text-gray-500 mb-8">Your parking spot is successfully reserved.</p>
-
-                <div className="bg-[#F8FAFC] rounded-2xl p-6 text-left mb-8 border border-gray-100 shadow-sm">
-                  <h4 className="font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-3">Reservation Details</h4>
-                  <div className="space-y-4 text-sm">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500">Location</span>
-                      <span className="font-medium text-gray-900 text-right">{title}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500">Arrive</span>
-                      <span className="font-medium text-gray-900">{startDate} at {startTime}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500">Exit</span>
-                      <span className="font-medium text-gray-900">{endDate} at {endTime}</span>
-                    </div>
-                    <div className="flex justify-between items-center pt-3 border-t border-gray-200">
-                      <span className="text-gray-500 mb-0.5">Amount Paid</span>
-                      <span className="font-bold text-teal-600 text-lg">${finalTotal.toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <Link to="/dashboard" className="block w-full bg-[#1A2332] hover:bg-black text-white py-4 px-8 rounded-xl font-semibold transition-colors shadow-md transition-transform hover:-translate-y-0.5">
-                  Go to Dashboard
-                </Link>
+            
+            {successMsg && (
+              <div className="mb-6 p-4 rounded-lg bg-green-50 border border-green-100 text-green-600 text-sm font-medium">
+                {successMsg}
               </div>
-            ) : (
+            )}
+
             <form onSubmit={handleBooking} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -265,14 +241,13 @@ const Booking = () => {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !!successMsg}
                 className={`w-full py-4 rounded-xl font-semibold text-lg transition-colors shadow-sm mt-4 text-white
-                ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#1A2332] hover:bg-black'}`}
+                ${loading || successMsg ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#1A2332] hover:bg-black'}`}
               >
-                {loading ? 'Processing...' : 'Confirm Booking'}
+                {loading ? 'Processing...' : successMsg ? 'Success!' : 'Book Now'}
               </button>
             </form>
-            )}
           </div>
         </div>
       </div>

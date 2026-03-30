@@ -3,6 +3,7 @@ import ParkingCard from '../components/ParkingCard';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { getAllParking } from '../services/api';
 
 // Fix for default Leaflet marker icons in React/Vite
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -16,71 +17,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-// Center of the map (NYC example)
+// Center of the map (NYC example) - use as fallback if no parkings
 const DEFAULT_CENTER = [40.7128, -74.0060];
-
-const DUMMY_PARKINGS = [
-  {
-    id: '1',
-    title: 'Downtown Premium Garage',
-    location: '124 Main St, City Center',
-    price: 8,
-    availability: 'Available',
-    image: 'https://images.unsplash.com/photo-1590674899484-ac33d3c80cd8?q=80&w=800&auto=format&fit=crop',
-    lat: 40.7128,
-    lng: -74.0060
-  },
-  {
-    id: '2',
-    title: 'Airport Long-Term Parking',
-    location: 'Terminal B, Int. Airport',
-    price: 15,
-    availability: 'Full',
-    image: 'https://images.unsplash.com/photo-1573348722427-f1d6819f04ab?q=80&w=800&auto=format&fit=crop',
-    lat: 40.7150,
-    lng: -74.0110
-  },
-  {
-    id: '3',
-    title: 'Mall Underground Secure',
-    location: '445 West End Ave',
-    price: 5,
-    availability: 'Available',
-    image: 'https://images.unsplash.com/photo-1604147706283-d7119b5b822c?q=80&w=800&auto=format&fit=crop',
-    lat: 40.7110,
-    lng: -73.9980
-  },
-  {
-    id: '4',
-    title: 'University Campus Standard',
-    location: 'Student Union, North Campus',
-    price: 3,
-    availability: 'Available',
-    image: 'https://images.unsplash.com/photo-1563534571-081686de6f8b?q=80&w=800&auto=format&fit=crop',
-    lat: 40.7182,
-    lng: -74.0142
-  },
-  {
-    id: '5',
-    title: 'Financial District Express',
-    location: '88 Wall Street',
-    price: 12,
-    availability: 'Available',
-    image: 'https://images.unsplash.com/photo-1587824874052-a27ddfb917bc?q=80&w=800&auto=format&fit=crop',
-    lat: 40.7061,
-    lng: -74.0011
-  },
-  {
-    id: '6',
-    title: 'Riverside Private Driveway',
-    location: '202 River Road',
-    price: 4,
-    availability: 'Full',
-    image: 'https://images.unsplash.com/photo-1522271815180-2a8d16ebf010?q=80&w=800&auto=format&fit=crop',
-    lat: 40.7080,
-    lng: -74.0080
-  }
-];
 
 // Sub-component to seamlessly fly the map to the active parking coordinates
 function MapFlyToUpdater({ activeParkingId, parkings, markerRefs }) {
@@ -88,10 +26,11 @@ function MapFlyToUpdater({ activeParkingId, parkings, markerRefs }) {
   
   useEffect(() => {
     if (activeParkingId) {
-      const activeLocation = parkings.find(p => p.id === activeParkingId);
-      if (activeLocation) {
+      const activeLocation = parkings.find(p => p._id === activeParkingId);
+      if (activeLocation && activeLocation.location && activeLocation.location.coordinates) {
+        const [lng, lat] = activeLocation.location.coordinates;
         // Fly smoothly to location
-        map.flyTo([activeLocation.lat, activeLocation.lng], 15, {
+        map.flyTo([lat, lng], 15, {
           animate: true,
           duration: 1.2
         });
@@ -122,13 +61,35 @@ const FilterPill = ({ label }) => (
 export default function Explore() {
   const [activeParkingId, setActiveParkingId] = useState(null);
   const markerRefs = useRef({});
+  const [parkings, setParkings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchParkings = async () => {
+      try {
+        const res = await getAllParking();
+        const data = Array.isArray(res) ? res : res.data || [];
+        setParkings(data);
+      } catch (err) {
+        console.error("Error fetching parkings", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchParkings();
+  }, []);
+
+  // Determine center based on first parking if available
+  const center = parkings.length > 0 && parkings[0].location?.coordinates
+    ? [parkings[0].location.coordinates[1], parkings[0].location.coordinates[0]]
+    : DEFAULT_CENTER;
 
   return (
     <div className="flex w-full h-screen bg-gray-50 overflow-hidden">
       
       {/* Left Side: Parking Listings (45%) */}
       {/* Enabled native kinetic smooth-scrolling and engaged custom scrollbar hiding class */}
-      <div className="w-[45%] h-full overflow-y-auto scroll-smooth bg-white flex-shrink-0 hide-scrollbar relative z-10 shadow-lg relative">
+      <div className="w-[45%] h-full overflow-y-auto scroll-smooth bg-white flex-shrink-0 hide-scrollbar relative z-10 shadow-lg">
         
         {/* Responsive, unbounded full-width inner container */}
         <div className="w-full">
@@ -139,7 +100,7 @@ export default function Explore() {
               Spaces nearby
             </h1>
             <p className="text-[15px] text-gray-500 font-medium mt-4 tracking-wide">
-              {DUMMY_PARKINGS.length} premium locations available for instant booking
+              {loading ? 'Loading premium locations...' : `${parkings.length} premium locations available for instant booking`}
             </p>
           </div>
 
@@ -153,17 +114,23 @@ export default function Explore() {
 
           {/* Cards Stack - Taking full width of padded container */}
           <div className="flex flex-col gap-8 px-8 lg:px-12 pt-8 pb-20">
-            {DUMMY_PARKINGS.map((parking) => (
+            {loading ? (
+              <div className="flex justify-center py-10">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-500"></div>
+              </div>
+            ) : parkings.length === 0 ? (
+               <div className="text-center py-10 text-gray-500">No parking spaces automatically populated yet.</div>
+            ) : parkings.map((parking) => (
               <ParkingCard 
-                key={parking.id}
-                id={parking.id}
-                title={parking.title}
-                location={parking.location}
-                price={parking.price}
-                availability={parking.availability}
-                image={parking.image}
-                isActive={activeParkingId === parking.id}
-                onClick={() => setActiveParkingId(parking.id)}
+                key={parking._id}
+                id={parking._id}
+                title={parking.description?.substring(0, 40) || 'Premium Parking Spot'}
+                location={parking.location?.address || 'City Center'}
+                price={parking.pricePerHour}
+                availability={`${parking.availability?.startTime || '08:00'} - ${parking.availability?.endTime || '22:00'}`}
+                image={parking.images?.[0] || 'https://images.unsplash.com/photo-1590674899484-ac33d3c80cd8?q=80&w=800&auto=format&fit=crop'}
+                isActive={activeParkingId === parking._id}
+                onClick={() => setActiveParkingId(parking._id)}
               />
             ))}
           </div>
@@ -174,7 +141,7 @@ export default function Explore() {
       {/* Right Side: Leaflet Map View (55%) */}
       <div className="w-[55%] h-full relative z-0">
         <MapContainer 
-          center={DEFAULT_CENTER} 
+          center={center} 
           zoom={14} 
           scrollWheelZoom={true} 
           className="w-full h-full"
@@ -183,7 +150,7 @@ export default function Explore() {
           {/* Map logical updater */}
           <MapFlyToUpdater 
             activeParkingId={activeParkingId} 
-            parkings={DUMMY_PARKINGS} 
+            parkings={parkings} 
             markerRefs={markerRefs} 
           />
 
@@ -194,25 +161,29 @@ export default function Explore() {
           />
 
           {/* Render markers perfectly onto the map */}
-          {DUMMY_PARKINGS.map((parking) => (
-            <Marker 
-              key={`marker-${parking.id}`} 
-              position={[parking.lat, parking.lng]}
-              ref={(ref) => {
-                if (ref) markerRefs.current[parking.id] = ref;
-              }}
-              eventHandlers={{
-                click: () => setActiveParkingId(parking.id)
-              }}
-            >
-              <Popup>
-                <div className="p-1 min-w-[120px]">
-                  <h3 className="font-bold text-sm text-gray-900 mb-1">{parking.title}</h3>
-                  <p className="text-sm font-semibold text-[#3b5cf2]">${parking.price} / hr</p>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+          {parkings.map((parking) => {
+            if (!parking.location || !parking.location.coordinates) return null;
+            const [lng, lat] = parking.location.coordinates;
+            return (
+              <Marker 
+                key={`marker-${parking._id}`} 
+                position={[lat, lng]}
+                ref={(ref) => {
+                  if (ref) markerRefs.current[parking._id] = ref;
+                }}
+                eventHandlers={{
+                  click: () => setActiveParkingId(parking._id)
+                }}
+              >
+                <Popup>
+                  <div className="p-1 min-w-[120px]">
+                    <h3 className="font-bold text-sm text-gray-900 mb-1">{parking.description?.substring(0, 30) || 'Premium Parking Spot'}</h3>
+                    <p className="text-sm font-semibold text-[#3b5cf2]">${parking.pricePerHour} / hr</p>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
         </MapContainer>
       </div>
       
