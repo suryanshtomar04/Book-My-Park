@@ -9,6 +9,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -19,6 +20,7 @@ export const AuthProvider = ({ children }) => {
         console.error("Error parsing stored user:", error);
       }
     }
+    setIsInitialized(true);
   }, []);
 
   const login = (userData, authToken) => {
@@ -41,6 +43,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     isAuthenticated: !!token,
+    isInitialized,
   };
 
   return (

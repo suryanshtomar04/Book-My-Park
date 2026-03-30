@@ -6,6 +6,9 @@ import ParkingDetails from './pages/ParkingDetails';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Booking from './pages/Booking';
+import AddParking from './pages/AddParking';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -15,9 +18,11 @@ function App() {
           <Route index element={<Home />} />
           <Route path="explore" element={<Explore />} />
           <Route path="parking/:id" element={<ParkingDetails />} />
-          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
+          <Route path="booking" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
+          <Route path="add-parking" element={<ProtectedRoute><AddParking /></ProtectedRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>

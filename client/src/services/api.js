@@ -60,4 +60,13 @@ export const getUserBookings = async () => {
   return response.data;
 };
 
+export const createParking = async (formData) => {
+  const response = await api.post('/parking', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
 export default api;
