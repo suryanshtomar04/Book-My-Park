@@ -143,7 +143,7 @@ export default function AddParking() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="pricePerHour" className="block text-sm font-semibold text-gray-700 mb-1.5">
-                  Price per Hour ($)
+                  Price per Hour (₹)
                 </label>
                 <input
                   type="number"

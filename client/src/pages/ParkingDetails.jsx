@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 const DUMMY_PARKING = {
   id: 'preview',
   title: 'Downtown Premium Garage',
-  location: '124 Main St, City Center',
-  price: 8,
+  location: 'Sector 62, City Center',
+  price: 50,
   image: 'https://images.unsplash.com/photo-1590674899484-ac33d3c80cd8?q=80&w=1200&auto=format&fit=crop',
 };
 
@@ -62,7 +62,7 @@ export default function ParkingDetails() {
               
               {/* Form Pricing Header */}
               <div className="flex items-baseline gap-2 mb-8">
-                <span className="text-[32px] font-bold text-gray-900 tracking-tight">${DUMMY_PARKING.price}</span>
+                <span className="text-[32px] font-bold text-gray-900 tracking-tight">₹{DUMMY_PARKING.price}</span>
                 <span className="text-[15px] font-medium text-gray-500">/ hour</span>
               </div>
 
@@ -120,7 +120,7 @@ export default function ParkingDetails() {
                 {/* Total Price Estimate (Static for now) */}
                 <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
                   <span className="text-[15px] font-semibold text-gray-900">Estimated Total</span>
-                  <span className="text-xl font-bold text-gray-900 line-through text-opacity-40">$-.--</span>
+                  <span className="text-xl font-bold text-gray-900 line-through text-opacity-40">₹-.--</span>
                 </div>
 
                 {/* Confirm Action */}

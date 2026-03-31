@@ -18,7 +18,11 @@ export default function Dashboard() {
         const res = await getUserBookings();
         // Adjust depending on how backend wraps response 
         const data = Array.isArray(res) ? res : res.data || [];
-        setBookings(data);
+        
+        // Load demo bookings from local storage
+        const demoBookings = JSON.parse(localStorage.getItem('demoBookings') || '[]');
+        
+        setBookings([...demoBookings, ...data]);
         setError(null);
       } catch (err) {
         if (err.response?.status === 401) {
@@ -26,8 +30,15 @@ export default function Dashboard() {
           navigate('/login', { replace: true });
           return;
         }
-        console.error("Failed to fetch bookings:", err);
-        setError("Failed to load your bookings. Please try again later.");
+        console.error("Failed to fetch backend bookings:", err);
+        
+        // Fallback to local storage on backend error
+        const demoBookings = JSON.parse(localStorage.getItem('demoBookings') || '[]');
+        if (demoBookings.length > 0) {
+          setBookings(demoBookings);
+        } else {
+          setError("Failed to load your bookings. Please try again later.");
+        }
       } finally {
         setLoading(false);
       }
@@ -152,7 +163,7 @@ export default function Dashboard() {
                       <div className="text-left sm:text-right mb-0 sm:mb-4">
                         <span className="block text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Total Paid</span>
                         <span className="text-xl font-bold text-gray-900">
-                          ${booking.totalPrice?.toFixed(2) || '22.00'}
+                          ₹{booking.totalPrice?.toFixed(2) || '150.00'}
                         </span>
                       </div>
                       

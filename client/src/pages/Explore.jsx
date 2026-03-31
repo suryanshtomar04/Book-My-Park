@@ -3,7 +3,9 @@ import ParkingCard from '../components/ParkingCard';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { getAllParking } from '../services/api';
+import { getAllParking, getNearbyParking } from '../services/api';
+import { useLocation } from '../context/LocationContext';
+import { generateMockSpots, calculateDistance } from '../utils/distance';
 
 // Fix for default Leaflet marker icons in React/Vite
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -17,8 +19,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-// Center of the map (NYC example) - use as fallback if no parkings
-const DEFAULT_CENTER = [40.7128, -74.0060];
+// Fallback center if location completely fails
+const DEFAULT_CENTER = [28.6139, 77.2090]; // New Delhi
 
 // Sub-component to seamlessly fly the map to the active parking coordinates
 function MapFlyToUpdater({ activeParkingId, parkings, markerRefs }) {
@@ -59,17 +61,33 @@ const FilterPill = ({ label }) => (
 );
 
 export default function Explore() {
+  const { lat, lng, address, loading: locationLoading } = useLocation();
   const [activeParkingId, setActiveParkingId] = useState(null);
   const markerRefs = useRef({});
   const [parkings, setParkings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dynamicFallbacks, setDynamicFallbacks] = useState([]);
 
   useEffect(() => {
+    // Wait until location is resolved (could be real or manual fallback)
+    if (locationLoading) return;
+
     const fetchParkings = async () => {
       try {
-        const res = await getAllParking();
+        setLoading(true);
+        let res;
+        if (lat && lng) {
+          res = await getNearbyParking(lat, lng);
+        } else {
+          res = await getAllParking();
+        }
         const data = Array.isArray(res) ? res : res.data || [];
         setParkings(data);
+        
+        // If empty, generate dynamic local mock spots based on user's coordinate
+        if (data.length === 0 && lat && lng) {
+           setDynamicFallbacks(generateMockSpots(lat, lng, address || 'Your Area'));
+        }
       } catch (err) {
         console.error("Error fetching parkings", err);
       } finally {
@@ -77,12 +95,16 @@ export default function Explore() {
       }
     };
     fetchParkings();
-  }, []);
+  }, [lat, lng, address, locationLoading]);
 
-  // Determine center based on first parking if available
-  const center = parkings.length > 0 && parkings[0].location?.coordinates
-    ? [parkings[0].location.coordinates[1], parkings[0].location.coordinates[0]]
-    : DEFAULT_CENTER;
+  const displayParkings = parkings.length > 0 ? parkings : dynamicFallbacks;
+
+  // Center based on user location first, then first parking spot, then default
+  const center = (lat && lng) 
+    ? [lat, lng] 
+    : (displayParkings.length > 0 && displayParkings[0].location?.coordinates
+      ? [displayParkings[0].location.coordinates[1], displayParkings[0].location.coordinates[0]]
+      : DEFAULT_CENTER);
 
   return (
     <div className="flex w-full h-screen bg-gray-50 overflow-hidden">
@@ -100,7 +122,7 @@ export default function Explore() {
               Spaces nearby
             </h1>
             <p className="text-[15px] text-gray-500 font-medium mt-4 tracking-wide">
-              {loading ? 'Loading premium locations...' : `${parkings.length} premium locations available for instant booking`}
+              {loading ? 'Loading premium locations...' : `${displayParkings.length} premium locations available for instant booking`}
             </p>
           </div>
 
@@ -114,25 +136,32 @@ export default function Explore() {
 
           {/* Cards Stack - Taking full width of padded container */}
           <div className="flex flex-col gap-8 px-8 lg:px-12 pt-8 pb-20">
-            {loading ? (
+            {loading || locationLoading ? (
               <div className="flex justify-center py-10">
                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-500"></div>
               </div>
-            ) : parkings.length === 0 ? (
-               <div className="text-center py-10 text-gray-500">No parking spaces automatically populated yet.</div>
-            ) : parkings.map((parking) => (
-              <ParkingCard 
-                key={parking._id}
-                id={parking._id}
-                title={parking.description?.substring(0, 40) || 'Premium Parking Spot'}
-                location={parking.location?.address || 'City Center'}
-                price={parking.pricePerHour}
-                availability={`${parking.availability?.startTime || '08:00'} - ${parking.availability?.endTime || '22:00'}`}
-                image={parking.images?.[0] || 'https://images.unsplash.com/photo-1590674899484-ac33d3c80cd8?q=80&w=800&auto=format&fit=crop'}
-                isActive={activeParkingId === parking._id}
-                onClick={() => setActiveParkingId(parking._id)}
-              />
-            ))}
+            ) : displayParkings.map((parking) => {
+              const pLng = parking.location?.coordinates?.[0];
+              const pLat = parking.location?.coordinates?.[1];
+              const distance = (lat && lng && pLat && pLng) 
+                ? calculateDistance(lat, lng, pLat, pLng)
+                : null;
+                
+              return (
+                <ParkingCard 
+                  key={parking._id}
+                  id={parking._id}
+                  title={parking.description?.substring(0, 40) || 'Premium Parking Spot'}
+                  location={parking.location?.address || 'City Center'}
+                  price={parking.pricePerHour}
+                  availability={typeof parking.availability === 'string' ? (parking.availability.toLowerCase() === 'full' ? 'Full' : 'Available') : 'Available'}
+                  image={parking.images?.[0] || 'https://images.unsplash.com/photo-1590674899484-ac33d3c80cd8?q=80&w=800&auto=format&fit=crop'}
+                  isActive={activeParkingId === parking._id}
+                  distance={distance}
+                  onClick={() => setActiveParkingId(parking._id)}
+                />
+              );
+            })}
           </div>
 
         </div>
@@ -150,7 +179,7 @@ export default function Explore() {
           {/* Map logical updater */}
           <MapFlyToUpdater 
             activeParkingId={activeParkingId} 
-            parkings={parkings} 
+            parkings={displayParkings} 
             markerRefs={markerRefs} 
           />
 
@@ -161,7 +190,7 @@ export default function Explore() {
           />
 
           {/* Render markers perfectly onto the map */}
-          {parkings.map((parking) => {
+          {displayParkings.map((parking) => {
             if (!parking.location || !parking.location.coordinates) return null;
             const [lng, lat] = parking.location.coordinates;
             return (
@@ -178,7 +207,7 @@ export default function Explore() {
                 <Popup>
                   <div className="p-1 min-w-[120px]">
                     <h3 className="font-bold text-sm text-gray-900 mb-1">{parking.description?.substring(0, 30) || 'Premium Parking Spot'}</h3>
-                    <p className="text-sm font-semibold text-[#3b5cf2]">${parking.pricePerHour} / hr</p>
+                    <p className="text-sm font-semibold text-[#3b5cf2]">₹{parking.pricePerHour} / hr</p>
                   </div>
                 </Popup>
               </Marker>

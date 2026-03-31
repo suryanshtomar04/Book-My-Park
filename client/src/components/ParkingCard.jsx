@@ -8,9 +8,10 @@ export default function ParkingCard({
   image = 'https://images.unsplash.com/photo-1590674899484-ac33d3c80cd8?q=80&w=800&auto=format&fit=crop', 
   title = 'Premium Parking Space',
   location = '123 Main St, City Center',
-  price = 5,
+  price = 50,
   availability = 'Available',
   isActive = false,
+  distance = null,
   onClick
 }) {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function ParkingCard({
 
   const handleBookNow = async (e) => {
     e.stopPropagation();
+    console.log("Book Now button clicked! Triggering booking flow...");
     
     if (!isAuthenticated) {
       navigate('/login');
@@ -32,11 +34,20 @@ export default function ParkingCard({
       const now = new Date();
       const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
       
-      await createBooking({
-        parkingId: id,
+      // DEMO MODE: Store directly in localStorage
+      const demoBooking = {
+        _id: Date.now().toString(),
+        parkingId: {
+          description: title,
+          location: { address: location }
+        },
         startTime: now.toISOString(),
         endTime: oneHourLater.toISOString(),
-      });
+        totalPrice: price
+      };
+      
+      const existingBookings = JSON.parse(localStorage.getItem('demoBookings') || '[]');
+      localStorage.setItem('demoBookings', JSON.stringify([demoBooking, ...existingBookings]));
 
       navigate('/dashboard');
     } catch (err) {
@@ -77,9 +88,19 @@ export default function ParkingCard({
         
         {/* Top Header Section */}
         <div className="mb-2">
-          {/* Subtle Location Above Title */}
-          <div className="flex items-center text-gray-500 text-[13px] mb-1.5 font-medium tracking-wide">
-            <span className="truncate">{location}</span>
+          {/* Subtle Location & Badges */}
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+            <span className="text-gray-500 text-[13px] font-medium tracking-wide truncate max-w-[150px]">{location}</span>
+            {distance !== null && distance < 2.0 && (
+              <span className="px-2 py-0.5 bg-[#3b5cf2]/10 text-[#3b5cf2] rounded-full text-[10px] font-extrabold uppercase tracking-widest whitespace-nowrap">
+                Near you
+              </span>
+            )}
+            {distance !== null && (
+              <span className="text-gray-400 text-[12px] font-medium ml-auto">
+                {distance.toFixed(1)} km away
+              </span>
+            )}
           </div>
           <h3 className="text-[18px] sm:text-[20px] font-semibold text-gray-900 leading-snug line-clamp-2 pr-2">{title}</h3>
           
@@ -93,15 +114,15 @@ export default function ParkingCard({
         {/* Bottom Footer: Price & Action */}
         <div className="mt-auto flex items-end justify-between px-1">
           <div className="flex items-baseline gap-1">
-            <span className="text-[22px] sm:text-[26px] font-bold text-gray-900 tracking-tight">${price}</span>
+            <span className="text-[22px] sm:text-[26px] font-bold text-gray-900 tracking-tight">₹{price}</span>
             <span className="text-[14px] text-gray-500 font-medium">/ hour</span>
           </div>
           
           <button 
             onClick={handleBookNow}
-            disabled={loading || availability?.toLowerCase() !== 'available'}
+            disabled={loading || availability?.toLowerCase() === 'full'}
             className={`px-6 py-2.5 text-white text-[14px] font-semibold rounded-[0.5rem] shadow-sm transition-all duration-300 focus:outline-none ${
-              loading || availability?.toLowerCase() !== 'available'
+              loading || availability?.toLowerCase() === 'full'
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-[#3b5cf2] hover:bg-[#2e47c7] hover:shadow-md'
             }`}

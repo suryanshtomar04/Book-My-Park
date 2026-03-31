@@ -36,12 +36,12 @@ const Booking = () => {
 
     const hours = diffMs / (1000 * 60 * 60);
     const roundedHours = Math.ceil(hours);
-    const rate = parseFloat(price) || 5;
+    const rate = parseFloat(price) || 50;
     
     return { durationHours: roundedHours, totalPrice: roundedHours * rate };
   }, [startDate, startTime, endDate, endTime, price]);
 
-  const serviceFee = 2.00;
+  const serviceFee = 20.00;
   const finalTotal = totalPrice > 0 ? totalPrice + serviceFee : 0;
 
   const handleBooking = async (e) => {
@@ -67,12 +67,20 @@ const Booking = () => {
       const formattedStartTime = new Date(`${startDate}T${startTime}`).toISOString();
       const formattedEndTime = new Date(`${endDate}T${endTime}`).toISOString();
 
-      await createBooking({
-        userId: user._id || user.id,
-        parkingId,
+      // DEMO MODE: Store directly in localStorage
+      const demoBooking = {
+        _id: Date.now().toString(),
+        parkingId: {
+          description: title,
+          location: { address: parkingLocation }
+        },
         startTime: formattedStartTime,
         endTime: formattedEndTime,
-      });
+        totalPrice: finalTotal
+      };
+      
+      const existingBookings = JSON.parse(localStorage.getItem('demoBookings') || '[]');
+      localStorage.setItem('demoBookings', JSON.stringify([demoBooking, ...existingBookings]));
 
       setSuccessMsg('Booking confirmed successfully! Redirecting to dashboard...');
       setTimeout(() => {
@@ -110,7 +118,7 @@ const Booking = () => {
                 className="w-full h-full object-cover"
               />
               <div className="absolute top-4 right-4 bg-white/90 backdrop-blur block px-3 py-1 rounded-full shadow-sm text-sm font-semibold text-teal-600">
-                ${price || '5.00'} / hr
+                ₹{price || '50.00'} / hr
               </div>
             </div>
             
@@ -225,17 +233,17 @@ const Booking = () => {
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Price per hour</span>
-                    <span className="font-medium text-gray-900">${parseFloat(price || 5).toFixed(2)}</span>
+                    <span className="font-medium text-gray-900">₹{parseFloat(price || 50).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Service fee</span>
-                    <span className="font-medium text-gray-900">${serviceFee.toFixed(2)}</span>
+                    <span className="font-medium text-gray-900">₹{serviceFee.toFixed(2)}</span>
                   </div>
                 </div>
                 
                 <div className="pt-4 border-t border-gray-200 flex justify-between items-center">
                   <span className="text-base font-bold text-gray-900">Total Price</span>
-                  <span className="text-2xl font-bold text-teal-600">${finalTotal.toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-teal-600">₹{finalTotal.toFixed(2)}</span>
                 </div>
               </div>
 
