@@ -12,7 +12,7 @@ const DUMMY_PARKING = {
 
 export default function ParkingDetails() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F8FAFC] text-gray-900">
       
       {/* Main Container - added thick top padding to respect universal translucent navbar */}
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-[140px] pb-24">
@@ -38,7 +38,7 @@ export default function ParkingDetails() {
             </div>
 
             {/* Massive Premium Hero Image */}
-            <div className="w-full aspect-[4/3] sm:aspect-video rounded-[2rem] overflow-hidden bg-gray-100 shadow-sm border border-gray-100">
+            <div className="w-full aspect-[4/3] sm:aspect-video rounded-[2rem] overflow-hidden bg-white border border-gray-200 shadow-sm">
               <img 
                 src={DUMMY_PARKING.image} 
                 alt={DUMMY_PARKING.title} 
@@ -47,7 +47,7 @@ export default function ParkingDetails() {
             </div>
 
             {/* Detail Overview */}
-            <div className="border-t border-gray-100 pt-10">
+            <div className="border-t border-gray-200 pt-10">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About this space</h2>
               <p className="text-gray-600 leading-relaxed text-[15px]">
                 Enjoy secure, premium, guaranteed parking directly in the city center. Fully monitored 24/7 with effortless entry and exit. Close proximity to all major transit lines, corporate centers, and shopping districts. 
@@ -58,7 +58,7 @@ export default function ParkingDetails() {
 
           {/* RIGHT SIDE: Booking Form Widget (Spans 5 columns on largest screens, Sticky) */}
           <div className="xl:col-span-5 relative">
-            <div className="bg-white rounded-[2rem] border border-gray-200/80 p-8 sm:p-10 shadow-[0_24px_50px_rgba(0,0,0,0.06)] sticky top-[120px]">
+            <div className="bg-white backdrop-blur-md rounded-[2rem] border border-gray-200 p-8 sm:p-10 shadow-xl sticky top-[120px]">
               
               {/* Form Pricing Header */}
               <div className="flex items-baseline gap-2 mb-8">
@@ -70,11 +70,11 @@ export default function ParkingDetails() {
               <form className="space-y-6">
                 
                 {/* 2x2 Clean Airbnb Style Booking Inputs */}
-                <div className="grid grid-cols-2 gap-0 border border-gray-300 rounded-[1rem] overflow-hidden">
+                <div className="grid grid-cols-2 gap-0 border border-gray-300 rounded-[1rem] overflow-hidden bg-white">
                   
                   {/* Start Date */}
                   <div className="col-span-1 border-r border-b border-gray-300 p-3.5 focus-within:bg-gray-50 transition-colors">
-                    <label className="block text-[10px] font-extrabold text-gray-800 uppercase tracking-widest mb-1.5 ml-1">
+                    <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">
                       Start Date
                     </label>
                     <input 
@@ -85,7 +85,7 @@ export default function ParkingDetails() {
 
                   {/* Start Time */}
                   <div className="col-span-1 border-b border-gray-300 p-3.5 focus-within:bg-gray-50 transition-colors">
-                    <label className="block text-[10px] font-extrabold text-gray-800 uppercase tracking-widest mb-1.5 ml-1">
+                    <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">
                       Start Time
                     </label>
                     <input 
@@ -96,7 +96,7 @@ export default function ParkingDetails() {
 
                   {/* End Date */}
                   <div className="col-span-1 border-r border-gray-300 p-3.5 focus-within:bg-gray-50 transition-colors">
-                    <label className="block text-[10px] font-extrabold text-gray-800 uppercase tracking-widest mb-1.5 ml-1">
+                    <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">
                       End Date
                     </label>
                     <input 
@@ -107,7 +107,7 @@ export default function ParkingDetails() {
 
                   {/* End Time */}
                   <div className="col-span-1 p-3.5 focus-within:bg-gray-50 transition-colors">
-                    <label className="block text-[10px] font-extrabold text-gray-800 uppercase tracking-widest mb-1.5 ml-1">
+                    <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5 ml-1">
                       End Time
                     </label>
                     <input 
@@ -118,22 +118,22 @@ export default function ParkingDetails() {
                 </div>
 
                 {/* Total Price Estimate (Static for now) */}
-                <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-[15px] font-semibold text-gray-900">Estimated Total</span>
-                  <span className="text-xl font-bold text-gray-900 line-through text-opacity-40">₹-.--</span>
+                <div className="pt-6 border-t border-gray-200 flex items-center justify-between">
+                  <span className="text-[15px] font-semibold text-gray-700">Estimated Total</span>
+                  <span className="text-xl font-bold text-gray-400 line-through">₹-.--</span>
                 </div>
 
                 {/* Confirm Action */}
                 <Link 
                   to="/booking"
                   state={{ ...DUMMY_PARKING }}
-                  className="block text-center w-full py-4 mt-2 bg-[#3b5cf2] hover:bg-[#2e47c7] text-white text-[15px] font-bold rounded-xl shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 focus:outline-none"
+                  className="block text-center w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-bold rounded-xl shadow-md transition-transform hover:-translate-y-0.5 focus:outline-none"
                 >
                   Reserve Space
                 </Link>
 
                 {/* Subtle trust metric */}
-                <p className="text-center text-[13px] text-gray-500 font-medium mt-4">
+                <p className="text-center text-[13px] text-gray-400 font-medium mt-4">
                   You won't be charged yet
                 </p>
 

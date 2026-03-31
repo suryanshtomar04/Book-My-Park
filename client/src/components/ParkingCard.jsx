@@ -61,21 +61,21 @@ export default function ParkingCard({
   return (
     <div 
       onClick={onClick}
-      className={`bg-white rounded-[1.5rem] border overflow-hidden transition-all duration-300 flex flex-col sm:flex-row group w-full p-2.5 sm:p-3.5 gap-4 sm:gap-6 h-auto sm:h-[220px] cursor-pointer
+      className={`bg-white rounded-[1.25rem] border border-gray-200 overflow-hidden transition-all duration-300 flex flex-col sm:flex-row group w-full p-2.5 sm:p-3.5 gap-4 sm:gap-6 h-auto sm:h-[220px] cursor-pointer
         ${isActive 
-          ? 'border-[#3b5cf2] shadow-[0_20px_40px_rgba(59,92,242,0.15)] -translate-y-1' 
-          : 'border-gray-100/80 hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:border-gray-200'}`}
+          ? 'border-blue-500/50 shadow-md bg-white' 
+          : 'hover:border-gray-300 hover:shadow-lg hover:-translate-y-0.5'}`}
     >
       
       {/* Image Container - Inset layout with distinct rounded corners */}
-      <div className="relative w-full sm:w-[280px] xl:w-[320px] h-[200px] sm:h-full overflow-hidden rounded-[1.125rem] bg-gray-100 flex-shrink-0">
+      <div className="relative w-full sm:w-[280px] xl:w-[320px] h-[200px] sm:h-full overflow-hidden rounded-[1rem] bg-gray-100 flex-shrink-0">
         <img 
           src={image} 
           alt={title} 
-          className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
+          className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500 ease-out"
         />
         {/* Availability Badge */}
-        <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5">
+        <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5 border border-gray-100">
           <span className={`w-2 h-2 rounded-full ${availability.toLowerCase() === 'available' ? 'bg-green-500' : 'bg-red-500'}`}></span>
           <span className="text-[10px] font-bold text-gray-800 tracking-wider uppercase">
             {availability}
@@ -92,7 +92,7 @@ export default function ParkingCard({
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
             <span className="text-gray-500 text-[13px] font-medium tracking-wide truncate max-w-[150px]">{location}</span>
             {distance !== null && distance < 2.0 && (
-              <span className="px-2 py-0.5 bg-[#3b5cf2]/10 text-[#3b5cf2] rounded-full text-[10px] font-extrabold uppercase tracking-widest whitespace-nowrap">
+              <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
                 Near you
               </span>
             )}
@@ -121,10 +121,10 @@ export default function ParkingCard({
           <button 
             onClick={handleBookNow}
             disabled={loading || availability?.toLowerCase() === 'full'}
-            className={`px-6 py-2.5 text-white text-[14px] font-semibold rounded-[0.5rem] shadow-sm transition-all duration-300 focus:outline-none ${
+            className={`px-6 py-2.5 text-white text-[14px] font-medium rounded-lg shadow-sm transition-all duration-300 focus:outline-none ${
               loading || availability?.toLowerCase() === 'full'
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-[#3b5cf2] hover:bg-[#2e47c7] hover:shadow-md'
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed border border-gray-200'
+                : 'bg-blue-600 hover:bg-blue-700'
             }`}
           >
             {loading ? 'Booking...' : 'Book Now'}

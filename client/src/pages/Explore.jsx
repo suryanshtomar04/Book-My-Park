@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ParkingCard from '../components/ParkingCard';
+import SkeletonCard from '../components/SkeletonCard';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -50,9 +51,8 @@ function MapFlyToUpdater({ activeParkingId, parkings, markerRefs }) {
   return null;
 }
 
-// Reusable Filter Pill UI matching minimalist modern logic
 const FilterPill = ({ label }) => (
-  <button className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 hover:border-gray-800 hover:text-gray-900 rounded-full text-[13px] font-medium text-gray-700 transition-all whitespace-nowrap focus:outline-none focus:ring-1 focus:ring-gray-300">
+  <button className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 hover:border-gray-800 hover:text-gray-900 rounded-full text-[13px] font-medium text-gray-700 transition-all whitespace-nowrap focus:outline-none focus:ring-1 focus:ring-gray-300 shadow-sm">
     {label}
     <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -107,11 +107,11 @@ export default function Explore() {
       : DEFAULT_CENTER);
 
   return (
-    <div className="flex w-full h-screen bg-gray-50 overflow-hidden">
+    <div className="flex w-full h-screen bg-[#F8FAFC] overflow-hidden">
       
       {/* Left Side: Parking Listings (45%) */}
       {/* Enabled native kinetic smooth-scrolling and engaged custom scrollbar hiding class */}
-      <div className="w-[45%] h-full overflow-y-auto scroll-smooth bg-white flex-shrink-0 hide-scrollbar relative z-10 shadow-lg">
+      <div className="w-[45%] h-full overflow-y-auto scroll-smooth bg-white flex-shrink-0 hide-scrollbar relative z-10 shadow-lg border-r border-gray-100">
         
         {/* Responsive, unbounded full-width inner container */}
         <div className="w-full">
@@ -122,7 +122,7 @@ export default function Explore() {
               Spaces nearby
             </h1>
             <p className="text-[15px] text-gray-500 font-medium mt-4 tracking-wide">
-              {loading ? 'Loading premium locations...' : `${displayParkings.length} premium locations available for instant booking`}
+              {loading ? 'Finding premium locations...' : `${displayParkings.length} premium locations available for instant booking`}
             </p>
           </div>
 
@@ -137,9 +137,11 @@ export default function Explore() {
           {/* Cards Stack - Taking full width of padded container */}
           <div className="flex flex-col gap-8 px-8 lg:px-12 pt-8 pb-20">
             {loading || locationLoading ? (
-              <div className="flex justify-center py-10">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-500"></div>
-              </div>
+              <>
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+              </>
             ) : displayParkings.map((parking) => {
               const pLng = parking.location?.coordinates?.[0];
               const pLat = parking.location?.coordinates?.[1];
@@ -183,7 +185,7 @@ export default function Explore() {
             markerRefs={markerRefs} 
           />
 
-          {/* Beautiful subtle generic map styling */}
+          {/* Beautiful subtle Light Map styling */}
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
@@ -207,7 +209,7 @@ export default function Explore() {
                 <Popup>
                   <div className="p-1 min-w-[120px]">
                     <h3 className="font-bold text-sm text-gray-900 mb-1">{parking.description?.substring(0, 30) || 'Premium Parking Spot'}</h3>
-                    <p className="text-sm font-semibold text-[#3b5cf2]">₹{parking.pricePerHour} / hr</p>
+                    <p className="text-sm font-semibold text-blue-600">₹{parking.pricePerHour} / hr</p>
                   </div>
                 </Popup>
               </Marker>

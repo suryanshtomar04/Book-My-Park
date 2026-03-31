@@ -97,10 +97,10 @@ const Booking = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 sm:px-6 lg:px-8 text-gray-900">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+        <div className="text-center mb-10 pt-16">
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">
             Complete Your Booking
           </h1>
           <p className="mt-4 text-lg text-gray-500">
@@ -110,14 +110,14 @@ const Booking = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Left: Parking details */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+          <div className="bg-white rounded-[1.5rem] shadow-md border border-gray-200 overflow-hidden flex flex-col">
             <div className="relative h-64 w-full">
               <img
                 src={image || "https://images.unsplash.com/photo-1590674899484-d5640e854abe?auto=format&fit=crop&q=80&w=1000"}
                 alt={title || "Parking Spot"}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute top-4 right-4 bg-white/90 backdrop-blur block px-3 py-1 rounded-full shadow-sm text-sm font-semibold text-teal-600">
+              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md block px-4 py-1.5 rounded-full border border-gray-200 shadow-sm text-sm font-bold text-gray-900">
                 ₹{price || '50.00'} / hr
               </div>
             </div>
@@ -127,7 +127,7 @@ const Booking = () => {
                 {title || 'Downtown Premium Garage'}
               </h2>
               <div className="flex items-center text-gray-500 mb-6 font-medium">
-                <svg className="h-5 w-5 mr-2 text-coral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -152,7 +152,7 @@ const Booking = () => {
           </div>
 
           {/* Right: Booking form */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <div className="bg-white rounded-[1.5rem] shadow-md border border-gray-200 p-8 backdrop-blur-md">
             <h2 className="text-xl font-bold text-gray-900 mb-6">Booking Details</h2>
             
             {error && (
@@ -178,7 +178,7 @@ const Booking = () => {
                     id="start-date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   />
                 </div>
                 <div>
@@ -190,7 +190,7 @@ const Booking = () => {
                     id="start-time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
@@ -205,7 +205,7 @@ const Booking = () => {
                     id="end-date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   />
                 </div>
                 <div>
@@ -217,25 +217,25 @@ const Booking = () => {
                     id="end-time"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
 
-              <hr className="border-gray-100 my-6" />
+              <hr className="border-gray-200 my-6" />
 
-              <div className="bg-[#F8FAFC] rounded-xl p-6">
+              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Summary</h3>
                 <div className="space-y-3 mb-4 text-sm">
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-gray-500">
                     <span>Duration</span>
                     <span className="font-medium text-gray-900">{durationHours} hours</span>
                   </div>
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-gray-500">
                     <span>Price per hour</span>
                     <span className="font-medium text-gray-900">₹{parseFloat(price || 50).toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-gray-500">
                     <span>Service fee</span>
                     <span className="font-medium text-gray-900">₹{serviceFee.toFixed(2)}</span>
                   </div>
@@ -243,15 +243,15 @@ const Booking = () => {
                 
                 <div className="pt-4 border-t border-gray-200 flex justify-between items-center">
                   <span className="text-base font-bold text-gray-900">Total Price</span>
-                  <span className="text-2xl font-bold text-teal-600">₹{finalTotal.toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-blue-600">₹{finalTotal.toFixed(2)}</span>
                 </div>
               </div>
 
               <button
                 type="submit"
                 disabled={loading || !!successMsg}
-                className={`w-full py-4 rounded-xl font-semibold text-lg transition-colors shadow-sm mt-4 text-white
-                ${loading || successMsg ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#1A2332] hover:bg-black'}`}
+                className={`w-full py-4 rounded-xl font-semibold text-lg transition-transform hover:-translate-y-0.5 shadow-md mt-4 text-white
+                ${loading || successMsg ? 'bg-gray-300 cursor-not-allowed text-gray-500' : 'bg-blue-600 hover:bg-blue-700'}`}
               >
                 {loading ? 'Processing...' : successMsg ? 'Success!' : 'Book Now'}
               </button>

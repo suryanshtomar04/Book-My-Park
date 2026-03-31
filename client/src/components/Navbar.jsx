@@ -12,7 +12,7 @@ export default function Navbar() {
     navigate('/login');
   };
   return (
-    <nav className="absolute top-0 left-0 w-full z-50 flex items-center justify-between px-8 md:px-12 py-5 bg-black/10 backdrop-blur-md border-b border-white/10 text-white font-sans">
+    <nav className="absolute top-0 left-0 w-full z-50 flex items-center justify-between px-8 md:px-12 py-5 bg-white/80 backdrop-blur-xl border-b border-gray-200 text-gray-900 font-sans transition-colors duration-300">
       
       {/* Brand / Logo */}
       <div className="text-xl font-semibold tracking-tight cursor-pointer">
@@ -22,21 +22,21 @@ export default function Navbar() {
       {/* Centered Navigation Links - Expanded Spacing & Animated Hover */}
       <ul className="hidden md:flex items-center space-x-14 lg:space-x-16 text-[13px] font-medium tracking-widest">
         <li>
-          <Link to="/" className="relative text-white/75 hover:text-white transition-colors duration-300 group py-1">
+          <Link to="/" className="relative text-gray-600 hover:text-gray-900 transition-colors duration-300 group py-1">
             Home
-            <span className="absolute left-0 -bottom-1.5 w-0 h-[1.5px] bg-white/80 transition-all duration-300 group-hover:w-full"></span>
+            <span className="absolute left-0 -bottom-1.5 w-0 h-[1.5px] bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
           </Link>
         </li>
         <li>
-          <Link to="/explore" className="relative text-white/75 hover:text-white transition-colors duration-300 group py-1">
+          <Link to="/explore" className="relative text-gray-600 hover:text-gray-900 transition-colors duration-300 group py-1">
             Explore
-            <span className="absolute left-0 -bottom-1.5 w-0 h-[1.5px] bg-white/80 transition-all duration-300 group-hover:w-full"></span>
+            <span className="absolute left-0 -bottom-1.5 w-0 h-[1.5px] bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
           </Link>
         </li>
         <li>
-          <Link to="/dashboard" className="relative text-white/75 hover:text-white transition-colors duration-300 group py-1">
+          <Link to="/dashboard" className="relative text-gray-600 hover:text-gray-900 transition-colors duration-300 group py-1">
             Dashboard
-            <span className="absolute left-0 -bottom-1.5 w-0 h-[1.5px] bg-white/80 transition-all duration-300 group-hover:w-full"></span>
+            <span className="absolute left-0 -bottom-1.5 w-0 h-[1.5px] bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
           </Link>
         </li>
       </ul>
@@ -47,7 +47,7 @@ export default function Navbar() {
         {/* Location Badge */}
         <div className="hidden lg:flex items-center gap-2">
           {loading ? (
-            <span className="text-[12px] text-white/60 animate-pulse flex items-center gap-1.5"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg> Locating...</span>
+            <span className="text-[12px] text-gray-500 animate-pulse flex items-center gap-1.5"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg> Locating...</span>
           ) : (
             <>
               <button 
@@ -55,10 +55,10 @@ export default function Navbar() {
                   const manual = prompt('Enter your city to view nearby parking:', address || '');
                   if (manual) setManualLocation(manual);
                 }}
-                className={`group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full transition-all cursor-pointer text-[12px] font-medium ${error ? 'bg-orange-500/10 border border-orange-500/20 text-orange-200 hover:bg-orange-500/20' : 'bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 hover:text-white'}`}
+                className={`group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full transition-all cursor-pointer text-[12px] font-medium ${error ? 'bg-orange-50 border border-orange-200 text-orange-600 hover:bg-orange-100' : 'bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
                 title="Click to edit location manually"
               >
-                <svg className={`w-3.5 h-3.5 ${error ? 'text-orange-400' : 'text-teal-400 group-hover:animate-bounce'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className={`w-3.5 h-3.5 ${error ? 'text-orange-500' : 'text-blue-500 group-hover:animate-bounce'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -78,12 +78,12 @@ export default function Navbar() {
         </div>
         {isAuthenticated ? (
           <>
-            <span className="hidden sm:block text-[13px] font-medium text-white/90 tracking-wide">
+            <span className="hidden sm:block text-[13px] font-medium text-gray-800 tracking-wide">
               Hi, {user?.name?.split(' ')[0] || 'User'}
             </span>
             <button 
               onClick={handleLogout}
-              className="px-5 sm:px-6 py-2 sm:py-2.5 bg-white/10 text-white text-[13px] font-semibold rounded-full hover:bg-white/20 transition-all duration-300 border border-white/20"
+              className="px-5 sm:px-6 py-2 sm:py-2.5 bg-gray-100 text-gray-700 text-[13px] font-semibold rounded-full hover:bg-gray-200 transition-all duration-300 border border-gray-200"
             >
               Logout
             </button>
@@ -92,13 +92,13 @@ export default function Navbar() {
           <>
             <Link 
               to="/register" 
-              className="hidden sm:block text-[13px] font-medium text-white/75 hover:text-white tracking-wide transition-colors duration-300"
+              className="hidden sm:block text-[13px] font-medium text-gray-600 hover:text-gray-900 tracking-wide transition-colors duration-300"
             >
               Sign Up
             </Link>
             <Link 
               to="/login" 
-              className="px-6 py-2.5 bg-white text-gray-900 text-[13px] font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-px"
+              className="px-6 py-2.5 bg-blue-600 text-white text-[13px] font-semibold rounded-full hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-px"
             >
               Login
             </Link>

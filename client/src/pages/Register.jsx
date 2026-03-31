@@ -61,9 +61,9 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 sm:px-6 lg:px-8 pt-32 flex flex-col items-center">
-      <div className="bg-white p-8 sm:p-12 rounded-2xl shadow-sm border border-gray-100 text-center w-full max-w-md">
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Create Account</h1>
+    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 sm:px-6 lg:px-8 pt-32 flex flex-col items-center text-gray-900">
+      <div className="bg-white p-8 sm:p-12 rounded-[1.5rem] shadow-lg border border-gray-200 text-center w-full max-w-md backdrop-blur-md">
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight">Create Account</h1>
         <p className="text-gray-500 mb-8">Join us to book or list premium parking spots.</p>
         
         {error && (
@@ -86,7 +86,7 @@ export default function Register() {
               onChange={handleChange}
               placeholder="John Doe"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-colors"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-gray-900"
             />
           </div>
 
@@ -103,7 +103,7 @@ export default function Register() {
               placeholder="you@example.com"
               autoComplete="email"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-colors"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-gray-900"
             />
           </div>
 
@@ -120,7 +120,7 @@ export default function Register() {
               placeholder="••••••••"
               autoComplete="new-password"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-colors"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-gray-900"
             />
           </div>
 
@@ -137,15 +137,15 @@ export default function Register() {
               placeholder="••••••••"
               autoComplete="new-password"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-colors"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-gray-900"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-4 mt-2 text-white text-lg font-bold rounded-xl shadow-sm transition-all duration-300
-              ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#1A2332] hover:bg-black hover:shadow-md'}`}
+            className={`w-full py-4 mt-2 text-white text-lg font-bold rounded-xl shadow-md transition-transform duration-300 hover:-translate-y-0.5
+              ${loading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
           >
             {loading ? 'Creating...' : 'Sign Up'}
           </button>
@@ -153,7 +153,7 @@ export default function Register() {
 
         <p className="mt-8 text-sm text-gray-500 text-center">
           Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-teal-600 hover:text-teal-500">
+          <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700">
             Log in here
           </Link>
         </p>

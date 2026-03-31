@@ -10,7 +10,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <div className="relative w-full h-screen flex flex-col justify-center items-center bg-gray-900 overflow-hidden">
+    <div className="relative w-full h-screen flex flex-col justify-center items-center bg-[#F8FAFC] overflow-hidden">
       
       {/* Background Image & Overlay */}
       <div 
@@ -36,11 +36,11 @@ export default function Hero() {
 
         {/* Floating Search Bar Container - Delayed Slide Up */}
         <div 
-          className={`w-full max-w-[960px] mx-auto bg-white rounded-full flex flex-col md:flex-row items-center p-1.5 sm:p-2 shadow-[0_12px_40px_rgba(0,0,0,0.12)] relative transition-all duration-1000 delay-200 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+          className={`w-full max-w-[960px] mx-auto bg-white rounded-full flex flex-col md:flex-row items-center p-1.5 sm:p-2 border border-gray-200 shadow-[0_12px_40px_rgba(0,0,0,0.08)] relative transition-all duration-1000 delay-200 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
         >
 
           {/* Location Field */}
-          <div className="flex-[1.5] w-full px-5 py-2 hover:bg-gray-50/80 focus-within:bg-gray-50/80 rounded-full transition-all duration-200 cursor-pointer">
+          <div className="flex-[1.5] w-full px-5 py-2 hover:bg-gray-50 focus-within:bg-gray-50 rounded-full transition-all duration-200 cursor-pointer">
             <input 
               type="text" 
               placeholder="Where do you need parking?" 
@@ -48,53 +48,53 @@ export default function Hero() {
             />
           </div>
 
-          <div className="hidden md:block w-px h-6 bg-gray-100 mx-1"></div>
+          <div className="hidden md:block w-px h-6 bg-gray-200 mx-1"></div>
 
           {/* Start Date Field */}
-          <div className="flex-1 w-full px-4 py-2 hover:bg-gray-50/80 focus-within:bg-gray-50/80 rounded-full transition-all duration-200 cursor-pointer">
-            <label className="block text-[9px] font-medium text-gray-400 uppercase tracking-widest mb-0.5 cursor-pointer">Start Date</label>
+          <div className="flex-1 w-full px-4 py-2 hover:bg-gray-50 focus-within:bg-gray-50 rounded-full transition-all duration-200 cursor-pointer">
+            <label className="block text-[9px] font-medium text-gray-500 uppercase tracking-widest mb-0.5 cursor-pointer">Start Date</label>
             <input 
               type="date" 
-              className="w-full bg-transparent text-gray-800 text-[13px] font-normal focus:outline-none cursor-pointer min-w-0"
+              className="w-full bg-transparent text-gray-900 text-[13px] font-normal focus:outline-none cursor-pointer min-w-0"
             />
           </div>
 
-          <div className="hidden md:block w-px h-6 bg-gray-100 mx-1"></div>
+          <div className="hidden md:block w-px h-6 bg-gray-200 mx-1"></div>
 
           {/* Start Time Field */}
-          <div className="flex-1 w-full px-4 py-2 hover:bg-gray-50/80 focus-within:bg-gray-50/80 rounded-full transition-all duration-200 cursor-pointer">
-            <label className="block text-[9px] font-medium text-gray-400 uppercase tracking-widest mb-0.5 cursor-pointer">Start Time</label>
+          <div className="flex-1 w-full px-4 py-2 hover:bg-gray-50 focus-within:bg-gray-50 rounded-full transition-all duration-200 cursor-pointer">
+            <label className="block text-[9px] font-medium text-gray-500 uppercase tracking-widest mb-0.5 cursor-pointer">Start Time</label>
             <input 
               type="time" 
-              className="w-full bg-transparent text-gray-800 text-[13px] font-normal focus:outline-none cursor-pointer min-w-0"
+              className="w-full bg-transparent text-gray-900 text-[13px] font-normal focus:outline-none cursor-pointer min-w-0"
             />
           </div>
 
-          <div className="hidden md:block w-px h-6 bg-gray-100 mx-1"></div>
+          <div className="hidden md:block w-px h-6 bg-gray-200 mx-1"></div>
 
           {/* End Date Field */}
-          <div className="flex-1 w-full px-4 py-2 hover:bg-gray-50/80 focus-within:bg-gray-50/80 rounded-full transition-all duration-200 cursor-pointer">
-            <label className="block text-[9px] font-medium text-gray-400 uppercase tracking-widest mb-0.5 cursor-pointer">End Date</label>
+          <div className="flex-1 w-full px-4 py-2 hover:bg-gray-50 focus-within:bg-gray-50 rounded-full transition-all duration-200 cursor-pointer">
+            <label className="block text-[9px] font-medium text-gray-500 uppercase tracking-widest mb-0.5 cursor-pointer">End Date</label>
             <input 
               type="date" 
-              className="w-full bg-transparent text-gray-800 text-[13px] font-normal focus:outline-none cursor-pointer min-w-0"
+              className="w-full bg-transparent text-gray-900 text-[13px] font-normal focus:outline-none cursor-pointer min-w-0"
             />
           </div>
 
-          <div className="hidden md:block w-px h-6 bg-gray-100 mx-1"></div>
+          <div className="hidden md:block w-px h-6 bg-gray-200 mx-1"></div>
 
           {/* End Time Field */}
-          <div className="flex-1 w-full px-4 py-2 hover:bg-gray-50/80 focus-within:bg-gray-50/80 rounded-full transition-all duration-200 cursor-pointer">
-            <label className="block text-[9px] font-medium text-gray-400 uppercase tracking-widest mb-0.5 cursor-pointer">End Time</label>
+          <div className="flex-1 w-full px-4 py-2 hover:bg-gray-50 focus-within:bg-gray-50 rounded-full transition-all duration-200 cursor-pointer">
+            <label className="block text-[9px] font-medium text-gray-500 uppercase tracking-widest mb-0.5 cursor-pointer">End Time</label>
             <input 
               type="time" 
-              className="w-full bg-transparent text-gray-800 text-[13px] font-normal focus:outline-none cursor-pointer min-w-0"
+              className="w-full bg-transparent text-gray-900 text-[13px] font-normal focus:outline-none cursor-pointer min-w-0"
             />
           </div>
 
           {/* Search Button - Floating Scale Hover */}
           <div className="w-full md:w-auto mt-2 md:mt-0 md:ml-2">
-            <button className="w-full md:w-auto bg-[#3b5cf2] hover:bg-[#2e47c7] text-white font-medium text-[14px] py-3 px-8 rounded-full transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.03] active:scale-[0.97] flex items-center justify-center gap-2 whitespace-nowrap shadow-md hover:shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30">
+            <button className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold text-[14px] py-3 px-8 rounded-full transition-all duration-300 transform hover:-translate-y-0.5 shadow-md flex items-center justify-center gap-2 whitespace-nowrap">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
