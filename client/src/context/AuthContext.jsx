@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
 
@@ -7,27 +7,27 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error("Error parsing stored user:", error);
-      }
+  const [user, setUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch {
+      return null;
     }
-    setIsInitialized(true);
-  }, []);
+  });
 
-  const login = (userData, authToken) => {
-    setUser(userData);
-    setToken(authToken);
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', authToken);
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem('token') || null;
+  });
+
+  // Since we initialize synchronously from localStorage, we're immediately ready
+  const [isInitialized, setIsInitialized] = useState(true);
+
+  const login = (newUser, newToken) => {
+    setUser(newUser);
+    setToken(newToken);
+    localStorage.setItem('user', JSON.stringify(newUser));
+    localStorage.setItem('token', newToken);
   };
 
   const logout = () => {

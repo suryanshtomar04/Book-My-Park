@@ -23,7 +23,7 @@ const authorize = (...allowedRoles) => {
 };
 
 // ──────────────── Convenience Shortcuts ────────────────
-const onlyOwner = authorize("owner");
-const onlyDriver = authorize("driver");
+const onlyAdmin = authorize("admin");
+const onlyUser = authorize("user");
 
-module.exports = { authorize, onlyOwner, onlyDriver };
+module.exports = { authorize, onlyAdmin, onlyUser };

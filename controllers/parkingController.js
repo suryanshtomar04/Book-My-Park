@@ -18,7 +18,7 @@ const safeParse = (value) => {
 const createParking = catchAsync(async (req, res, next) => {
   const location = safeParse(req.body.location);
   const availability = safeParse(req.body.availability);
-  const { pricePerHour, description } = req.body;
+  const { pricePerHour, description, title, totalSlots } = req.body;
 
   let imageUrls = [];
   if (req.files && req.files.length > 0) {
@@ -27,7 +27,15 @@ const createParking = catchAsync(async (req, res, next) => {
     imageUrls = results.map((r) => r.url);
   }
 
-  const parkingData = { location, availability, pricePerHour, description };
+  const parkingData = { 
+    location, 
+    availability, 
+    pricePerHour, 
+    description, 
+    title, 
+    totalSlots,
+    availableSlots: totalSlots // Initial availability equals total capacity
+  };
   const parking = await parkingService.createParking(req.user._id, parkingData, imageUrls);
 
   res.status(201).json({

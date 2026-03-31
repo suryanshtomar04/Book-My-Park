@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { loginUser } from '../services/api';
 
 export default function Login() {
+  const [mode, setMode] = useState('user');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
@@ -42,12 +43,18 @@ export default function Login() {
         throw new Error('Invalid response structure received from server.');
       }
 
-      // Store in Context & LocalStorage via the login function handle
-      login(userData, authToken);
+      const user = userData;
 
-      // Successfully logged in! Send them where they meant to go (or dashboard by default)
+      // Save to localStorage
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Call login(user, token)
+      login(user, authToken);
+
+      console.log(user);
+
+      // Navigate without reload
       navigate(from, { replace: true });
-
     } catch (err) {
       console.error(err);
       setError(
@@ -62,8 +69,25 @@ export default function Login() {
     <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 sm:px-6 lg:px-8 pt-32 flex flex-col items-center text-gray-900">
       <div className="bg-white p-8 sm:p-12 rounded-[1.5rem] shadow-lg border border-gray-200 text-center w-full max-w-md backdrop-blur-md">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight">Welcome Back</h1>
-        <p className="text-gray-500 mb-8">Please enter your details to sign in.</p>
+        <p className="text-gray-500 mb-6">Please enter your details to sign in.</p>
         
+        <div className="flex bg-gray-100 p-1 rounded-full mb-8">
+          <button
+            type="button"
+            onClick={() => setMode('user')}
+            className={`flex-1 py-2.5 text-sm font-medium rounded-full transition-all duration-300 ease-in-out ${mode === 'user' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/50'}`}
+          >
+            User Login
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('admin')}
+            className={`flex-1 py-2.5 text-sm font-medium rounded-full transition-all duration-300 ease-in-out ${mode === 'admin' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/50'}`}
+          >
+            Admin Login
+          </button>
+        </div>
+
         {error && (
           <div className="mb-6 px-4 py-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm text-left">
             {error}

@@ -9,6 +9,27 @@ const parkingSchema = new mongoose.Schema(
       index: true,
     },
 
+    title: {
+      type: String,
+      required: [true, "Parking title is required"],
+      trim: true,
+      maxlength: [100, "Title cannot exceed 100 characters"],
+    },
+
+    totalSlots: {
+      type: Number,
+      required: [true, "Total slots is required"],
+      min: [1, "Parking must have at least 1 slot"],
+    },
+
+    availableSlots: {
+      type: Number,
+      required: [true, "Available slots is required"],
+      default: function () {
+        return this.totalSlots;
+      },
+    },
+
     location: {
       type: {
         type: String,

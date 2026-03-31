@@ -17,8 +17,8 @@ const signupSchema = Joi.object({
     "string.empty": "Password is required",
     "any.required": "Password is required",
   }),
-  role: Joi.string().valid("driver", "owner").default("driver").messages({
-    "any.only": "Role must be either 'driver' or 'owner'",
+  role: Joi.string().valid("user", "admin").default("user").messages({
+    "any.only": "Role must be either 'user' or 'admin'",
   }),
 });
 

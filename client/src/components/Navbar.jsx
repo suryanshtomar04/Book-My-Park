@@ -79,7 +79,7 @@ export default function Navbar() {
         {isAuthenticated ? (
           <>
             <span className="hidden sm:block text-[13px] font-medium text-gray-800 tracking-wide">
-              Hi, {user?.name?.split(' ')[0] || 'User'}
+              Hi, {user?.name?.split(' ')[0] || 'User'} {user?.role === 'admin' && <span className="text-blue-600 font-bold ml-1">(Admin)</span>}
             </span>
             <button 
               onClick={handleLogout}

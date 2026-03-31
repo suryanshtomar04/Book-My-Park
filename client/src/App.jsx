@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import Booking from './pages/Booking';
 import AddParking from './pages/AddParking';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="booking" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
-          <Route path="add-parking" element={<ProtectedRoute><AddParking /></ProtectedRoute>} />
+          <Route path="add-parking" element={<AdminRoute><AddParking /></AdminRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>

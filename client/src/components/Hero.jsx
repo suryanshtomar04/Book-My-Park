@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Hero() {
   const [mounted, setMounted] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 100);
@@ -44,12 +46,14 @@ export default function Hero() {
               </svg>
             </Link>
             
-            <Link 
-              to="/add-parking" 
-              className="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 font-bold text-[16px] px-8 py-4 rounded-xl transition-all duration-200"
-            >
-              List Your Space
-            </Link>
+            {user?.role === 'admin' && (
+              <Link 
+                to="/add-parking" 
+                className="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 font-bold text-[16px] px-8 py-4 rounded-xl transition-all duration-200"
+              >
+                List Your Space
+              </Link>
+            )}
           </div>
           
         </div>
@@ -67,21 +71,28 @@ export default function Hero() {
         >
           {/* Inner Image - Inverse Skew and Scale to prevent distortion */}
           <img 
-            src="https://images.unsplash.com/photo-1503376766-1c05d761614f?q=80&w=2666&auto=format&fit=crop" 
+            src="https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=2666&auto=format&fit=crop" 
             alt="Bright Premium Parking" 
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover object-[75%_center]"
+            style={{ transform: 'skewX(-10deg) scale(1.15)', transformOrigin: 'top right' }}
+          />
+          {/* Subtle Left Edge Blend Gradient */}
+          <div 
+            className="absolute inset-y-0 left-0 w-[40%] bg-gradient-to-r from-white/80 via-white/20 to-transparent pointer-events-none"
             style={{ transform: 'skewX(-10deg) scale(1.15)', transformOrigin: 'top right' }}
           />
         </div>
 
         {/* Mobile Variant */}
-        <div className="lg:hidden w-full h-full px-4 sm:px-6 pb-6">
-          <div className="w-full h-full rounded-3xl shadow-xl overflow-hidden pointer-events-auto">
+        <div className="lg:hidden w-full h-full px-4 sm:px-6 pb-6 relative">
+          <div className="w-full h-full rounded-3xl shadow-xl overflow-hidden pointer-events-auto relative">
              <img 
-              src="https://images.unsplash.com/photo-1503376766-1c05d761614f?q=80&w=2666&auto=format&fit=crop" 
+              src="https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=2666&auto=format&fit=crop" 
               alt="Premium Parking Location" 
-              className="w-full h-full object-cover pointer-events-none"
+              className="w-full h-full object-cover object-center pointer-events-none"
             />
+            {/* Subtle Top Edge Blend Gradient */}
+            <div className="absolute top-0 left-0 right-0 h-[40%] bg-gradient-to-b from-white/60 to-transparent pointer-events-none" />
           </div>
         </div>
 
