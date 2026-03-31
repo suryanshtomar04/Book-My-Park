@@ -127,7 +127,7 @@ export default function ParkingDetails() {
                 <Link 
                   to="/booking"
                   state={{ ...DUMMY_PARKING }}
-                  className="block text-center w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-bold rounded-xl shadow-md transition-transform hover:-translate-y-0.5 focus:outline-none"
+                  className="block text-center w-full px-5 py-2.5 mt-2 bg-blue-600 hover:brightness-95 hover:shadow-md text-white text-[15px] font-medium rounded-xl transition-all duration-150 ease-out focus:outline-none"
                 >
                   Reserve Space
                 </Link>

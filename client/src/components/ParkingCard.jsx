@@ -61,10 +61,10 @@ export default function ParkingCard({
   return (
     <div 
       onClick={onClick}
-      className={`bg-white rounded-[1.25rem] border border-gray-200 overflow-hidden transition-all duration-300 flex flex-col sm:flex-row group w-full p-2.5 sm:p-3.5 gap-4 sm:gap-6 h-auto sm:h-[220px] cursor-pointer
+      className={`bg-white rounded-[1.25rem] border border-gray-200 overflow-hidden transition-all duration-300 ease-out flex flex-col sm:flex-row group w-full p-2.5 sm:p-3.5 gap-4 sm:gap-6 h-auto sm:h-[220px] cursor-pointer
         ${isActive 
           ? 'border-blue-500/50 shadow-md bg-white' 
-          : 'hover:border-gray-300 hover:shadow-lg hover:-translate-y-0.5'}`}
+          : 'hover:border-gray-300 hover:shadow-lg hover:-translate-y-1'}`}
     >
       
       {/* Image Container - Inset layout with distinct rounded corners */}
@@ -121,10 +121,10 @@ export default function ParkingCard({
           <button 
             onClick={handleBookNow}
             disabled={loading || availability?.toLowerCase() === 'full'}
-            className={`px-6 py-2.5 text-white text-[14px] font-medium rounded-lg shadow-sm transition-all duration-300 focus:outline-none ${
+            className={`px-5 py-2.5 text-white text-[14px] font-medium rounded-xl transition-all duration-150 ease-out focus:outline-none ${
               loading || availability?.toLowerCase() === 'full'
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed border border-gray-200'
-                : 'bg-blue-600 hover:bg-blue-700'
+                : 'bg-blue-600 hover:brightness-95 hover:shadow-md'
             }`}
           >
             {loading ? 'Booking...' : 'Book Now'}

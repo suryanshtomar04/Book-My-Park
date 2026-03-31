@@ -52,7 +52,7 @@ function MapFlyToUpdater({ activeParkingId, parkings, markerRefs }) {
 }
 
 const FilterPill = ({ label }) => (
-  <button className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 hover:border-gray-800 hover:text-gray-900 rounded-full text-[13px] font-medium text-gray-700 transition-all whitespace-nowrap focus:outline-none focus:ring-1 focus:ring-gray-300 shadow-sm">
+  <button className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 hover:border-gray-800 hover:text-gray-900 hover:brightness-95 rounded-full text-[13px] font-medium text-gray-700 transition-all duration-150 ease-out whitespace-nowrap focus:outline-none focus:ring-1 focus:ring-gray-300 shadow-sm">
     {label}
     <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

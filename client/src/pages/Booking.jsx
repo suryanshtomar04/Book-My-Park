@@ -250,8 +250,8 @@ const Booking = () => {
               <button
                 type="submit"
                 disabled={loading || !!successMsg}
-                className={`w-full py-4 rounded-xl font-semibold text-lg transition-transform hover:-translate-y-0.5 shadow-md mt-4 text-white
-                ${loading || successMsg ? 'bg-gray-300 cursor-not-allowed text-gray-500' : 'bg-blue-600 hover:bg-blue-700'}`}
+                className={`w-full px-5 py-2.5 rounded-xl font-medium text-lg transition-all duration-150 ease-out mt-4 text-white
+                ${loading || successMsg ? 'bg-gray-300 cursor-not-allowed text-gray-500' : 'bg-blue-600 hover:brightness-95 hover:shadow-md'}`}
               >
                 {loading ? 'Processing...' : successMsg ? 'Success!' : 'Book Now'}
               </button>

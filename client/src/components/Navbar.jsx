@@ -83,7 +83,7 @@ export default function Navbar() {
             </span>
             <button 
               onClick={handleLogout}
-              className="px-5 sm:px-6 py-2 sm:py-2.5 bg-gray-100 text-gray-700 text-[13px] font-semibold rounded-full hover:bg-gray-200 transition-all duration-300 border border-gray-200"
+              className="px-5 sm:px-6 py-2 sm:py-2.5 bg-gray-100 text-gray-700 text-[13px] font-semibold rounded-full hover:brightness-95 transition-all duration-150 ease-out border border-gray-200"
             >
               Logout
             </button>
@@ -98,7 +98,7 @@ export default function Navbar() {
             </Link>
             <Link 
               to="/login" 
-              className="px-6 py-2.5 bg-blue-600 text-white text-[13px] font-semibold rounded-full hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-px"
+              className="px-6 py-2.5 bg-blue-600 text-white text-[13px] font-semibold rounded-full hover:brightness-95 transition-all duration-150 ease-out shadow-md"
             >
               Login
             </Link>

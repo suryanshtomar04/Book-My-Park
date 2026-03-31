@@ -104,7 +104,7 @@ export default function Dashboard() {
             <p className="text-gray-500 mb-6">You haven't reserved any parking spots so far.</p>
             <Link 
               to="/explore"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white py-3 px-8 rounded-xl font-semibold transition-colors shadow-sm"
+              className="inline-block bg-blue-600 hover:brightness-95 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-150 ease-out hover:shadow-md"
             >
               Explore Parking Spots
             </Link>
@@ -168,11 +168,11 @@ export default function Dashboard() {
                       </div>
                       
                       {isActive ? (
-                        <Link to="/explore" className="text-blue-600 font-semibold text-sm hover:text-blue-700 bg-blue-50 px-4 py-2 rounded-lg transition-colors border border-blue-100">
+                        <Link to="/explore" className="text-blue-600 font-medium text-sm hover:text-blue-700 bg-blue-50 px-5 py-2.5 rounded-xl transition-all duration-150 ease-out hover:brightness-95 hover:shadow-md border border-blue-100">
                           Extend Time
                         </Link>
                       ) : (
-                        <Link to="/explore" className="text-gray-600 font-semibold text-sm hover:text-gray-900 bg-gray-50 px-4 py-2 rounded-lg transition-colors border border-gray-200">
+                        <Link to="/explore" className="text-gray-600 font-medium text-sm hover:text-gray-900 bg-gray-50 px-5 py-2.5 rounded-xl transition-all duration-150 ease-out hover:brightness-95 hover:shadow-md border border-gray-200">
                           Book Again
                         </Link>
                       )}

@@ -217,8 +217,8 @@ export default function AddParking() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-4 rounded-xl font-bold text-lg text-white transition-transform hover:-translate-y-0.5 shadow-md
-                  ${loading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                className={`w-full px-5 py-2.5 rounded-xl font-medium text-lg text-white transition-all duration-150 ease-out
+                  ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:brightness-95 hover:shadow-md'}`}
               >
                 {loading ? 'Submitting...' : 'Add Parking Spot'}
               </button>
