@@ -2,24 +2,49 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { createParking } from '../services/api';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet's default marker icon issue in React/Vite
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+// Helper for reverse geocoding
+const getAddressFromCoords = async (lat, lng) => {
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+    const data = await res.json();
+    if (data && data.display_name) {
+      return data.display_name;
+    }
+  } catch (err) {
+    console.error("Reverse geocoding failed", err);
+  }
+  return "Selected Location";
+};
 
 export default function AddParking() {
   const navigate = useNavigate();
-  const { isAuthenticated, user, isInitialized } = useAuth();
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({
     parkingTitle: '',
-    locationAddress: '',
     pricePerHour: '',
     totalSlots: '',
     description: '',
   });
   
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [locationAddress, setLocationAddress] = useState('');
+  
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // Authentication is fully handled by upstream AdminRoute wrapper.
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,37 +57,93 @@ export default function AddParking() {
     }
   };
 
+  const LocationMarker = () => {
+    useMapEvents({
+      async click(e) {
+        const { lat, lng } = e.latlng;
+        setSelectedLocation({ lat, lng });
+        
+        const address = await getAddressFromCoords(lat, lng);
+        setLocationAddress(address);
+      },
+    });
+
+    return selectedLocation === null ? null : (
+      <Marker position={selectedLocation}></Marker>
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    if (!selectedLocation) {
+      setError("Please click on the map to select a parking location.");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // Build exactly like the expected Mongoose schema structure.
+      // Coordinates explicitly arranged as [longitude, latitude] to bypass MongoDB 2dsphere errors.
       const payload = {
         title: formData.parkingTitle,
-        location: formData.locationAddress,
-        price: Number(formData.pricePerHour),
+        location: {
+          address: locationAddress,
+          coordinates: [selectedLocation.lng, selectedLocation.lat]
+        },
+        pricePerHour: Number(formData.pricePerHour),
         totalSlots: Number(formData.totalSlots),
         availableSlots: Number(formData.totalSlots),
+        availability: {
+          startTime: "08:00",
+          endTime: "22:00"
+        },
+        description: formData.description,
         ownerId: user?.id || "dev-admin"
       };
 
-      console.log("PAYLOAD:", payload);
-      await createParking(payload);
+      console.log("FINAL PAYLOAD:", payload);
+
+      // We'll map the payload explicitly inside a FormData object if image exists,
+      // otherwise send directly since API handles it generically.
+      // Note: api.createParking expects 'multipart/form-data', so we must format it as FormData 
+      // otherwise Express Multer fails or discards data.
       
-      // On success, redirect to dashboard
+      const payloadData = new FormData();
+      payloadData.append("title", payload.title);
+      payloadData.append("location", JSON.stringify(payload.location));
+      payloadData.append("pricePerHour", payload.pricePerHour);
+      payloadData.append("totalSlots", payload.totalSlots);
+      payloadData.append("availableSlots", payload.availableSlots);
+      payloadData.append("availability", JSON.stringify(payload.availability));
+      payloadData.append("description", payload.description);
+      payloadData.append("ownerId", payload.ownerId);
+
+      if (image) {
+        payloadData.append("image", image);
+      }
+
+      await createParking(payloadData);
+      
       navigate('/dashboard');
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || 'Failed to add your parking spot. Make sure you are registered as an Owner.');
+      setError(err.response?.data?.message || 'Failed to add your parking spot.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setLoading(false);
     }
   };
 
+  // Default bounds roughly near Delhi India
+  const defaultCenter = [28.6139, 77.2090];
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 sm:px-6 lg:px-8 pt-32 text-gray-900">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <button 
           onClick={() => navigate(-1)}
           className="mb-6 flex items-center text-gray-500 hover:text-gray-800 transition-colors font-medium group"
@@ -78,7 +159,7 @@ export default function AddParking() {
             List Your Parking Spot
           </h1>
           <p className="mt-2 text-lg text-gray-500">
-            Fill out the details below to add your space to our network.
+            Pin your location and fill out the details below to add your space.
           </p>
         </div>
 
@@ -93,121 +174,139 @@ export default function AddParking() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Map Selection Component */}
             <div>
-              <label htmlFor="parkingTitle" className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Parking Title
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                1. Select Location on Map
               </label>
-              <input
-                type="text"
-                id="parkingTitle"
-                name="parkingTitle"
-                required
-                value={formData.parkingTitle}
-                onChange={handleChange}
-                placeholder="e.g. Downtown Premium Garage"
-                className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-gray-900"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="locationAddress" className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Location Address
-              </label>
-              <input
-                type="text"
-                id="locationAddress"
-                name="locationAddress"
-                required
-                value={formData.locationAddress}
-                onChange={handleChange}
-                placeholder="Sector 62, City Center"
-                className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-gray-900"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="pricePerHour" className="block text-sm font-semibold text-gray-700 mb-1.5">
-                  Price per Hour (₹)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
-                  <input
-                    type="number"
-                    id="pricePerHour"
-                    name="pricePerHour"
-                    required
-                    min="0"
-                    step="0.01"
-                    value={formData.pricePerHour}
-                    onChange={handleChange}
-                    placeholder="50.00"
-                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-white border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-gray-900"
+              <div className="h-[350px] w-full rounded-xl overflow-hidden shadow-sm border border-gray-200 z-10 relative">
+                <MapContainer center={defaultCenter} zoom={13} scrollWheelZoom={true} className="h-full w-full outline-none">
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; OpenStreetMap contributors'
                   />
-                </div>
+                  <LocationMarker />
+                </MapContainer>
               </div>
-              <div>
-                <label htmlFor="totalSlots" className="block text-sm font-semibold text-gray-700 mb-1.5">
-                  Total Slots
-                </label>
-                <input
-                  type="number"
-                  id="totalSlots"
-                  name="totalSlots"
-                  required
-                  min="1"
-                  value={formData.totalSlots}
-                  onChange={handleChange}
-                  placeholder="10"
-                  className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-gray-900"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                rows="4"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="Describe your parking spot, security features, access instructions, etc."
-                className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none text-gray-900"
-              ></textarea>
-            </div>
-
-            <div>
-              <label htmlFor="image" className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Upload Image
-              </label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-200 border-dashed rounded-xl hover:bg-gray-50 transition-colors bg-white group cursor-pointer">
-                <div className="space-y-1 text-center">
-                  <svg className="mx-auto h-12 w-12 text-gray-400 group-hover:text-blue-500 transition-colors" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <div className="flex text-sm text-gray-600 justify-center">
-                    <label htmlFor="image" className="relative cursor-pointer rounded-md font-bold text-blue-600 hover:text-blue-500 transition-colors">
-                      <span>Upload a file</span>
-                      <input id="image" name="image" type="file" className="sr-only" onChange={handleFileChange} accept="image/*" />
-                    </label>
-                  </div>
-                  <p className="text-xs text-gray-400">
-                    {image ? image.name : 'PNG, JPG, GIF up to 5MB'}
-                  </p>
-                </div>
+              
+              {/* Readonly Address View */}
+              <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Selected Address</h4>
+                <p className="text-sm font-medium text-gray-800">
+                  {locationAddress || "Click anywhere on the map above to select your location"}
+                </p>
               </div>
             </div>
 
             <div className="pt-4 border-t border-gray-100">
+              <label className="block text-sm font-semibold text-gray-700 mb-4">
+                2. Enter Spot Details
+              </label>
+              
+              <div className="space-y-6">
+                <div>
+                  <label htmlFor="parkingTitle" className="block text-sm font-medium text-gray-600 mb-1.5">
+                    Parking Title
+                  </label>
+                  <input
+                    type="text"
+                    id="parkingTitle"
+                    name="parkingTitle"
+                    required
+                    value={formData.parkingTitle}
+                    onChange={handleChange}
+                    placeholder="e.g. Downtown Premium Garage"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-gray-900"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="pricePerHour" className="block text-sm font-medium text-gray-600 mb-1.5">
+                      Price per Hour (₹)
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
+                      <input
+                        type="number"
+                        id="pricePerHour"
+                        name="pricePerHour"
+                        required
+                        min="0"
+                        step="0.01"
+                        value={formData.pricePerHour}
+                        onChange={handleChange}
+                        placeholder="50.00"
+                        className="w-full pl-8 pr-4 py-3 rounded-xl bg-white border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-gray-900"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="totalSlots" className="block text-sm font-medium text-gray-600 mb-1.5">
+                      Total Slots
+                    </label>
+                    <input
+                      type="number"
+                      id="totalSlots"
+                      name="totalSlots"
+                      required
+                      min="1"
+                      value={formData.totalSlots}
+                      onChange={handleChange}
+                      placeholder="10"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-gray-900"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-600 mb-1.5">
+                    Description
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    rows="4"
+                    value={formData.description}
+                    onChange={handleChange}
+                    placeholder="Describe your parking spot, security features, access instructions, etc."
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none text-gray-900"
+                  ></textarea>
+                </div>
+
+                <div>
+                  <label htmlFor="image" className="block text-sm font-medium text-gray-600 mb-1.5">
+                    Upload Cover Image (Optional)
+                  </label>
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-200 border-dashed rounded-xl hover:bg-gray-50 transition-colors bg-white group cursor-pointer">
+                    <div className="space-y-1 text-center">
+                      <svg className="mx-auto h-12 w-12 text-gray-400 group-hover:text-blue-500 transition-colors" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <div className="flex text-sm text-gray-600 justify-center">
+                        <label htmlFor="image" className="relative cursor-pointer rounded-md font-bold text-blue-600 hover:text-blue-500 transition-colors">
+                          <span>Upload a file</span>
+                          <input id="image" name="image" type="file" className="sr-only" onChange={handleFileChange} accept="image/*" />
+                        </label>
+                      </div>
+                      <p className="text-xs text-gray-400">
+                        {image ? image.name : 'PNG, JPG, GIF up to 5MB'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-6 border-t border-gray-100">
               <button
                 type="submit"
-                disabled={loading}
-                className={`w-full px-5 py-3.5 rounded-xl font-bold text-lg text-white transition-all duration-200 shadow-md shadow-blue-100
-                  ${loading ? 'bg-gray-300 cursor-not-allowed shadow-none' : 'bg-blue-600 hover:bg-blue-700 hover:scale-[1.01] active:scale-95'}`}
+                disabled={loading || !selectedLocation}
+                className={`w-full px-5 py-3.5 rounded-xl font-bold text-lg text-white transition-all duration-200 shadow-md
+                  ${(loading || !selectedLocation) 
+                    ? 'bg-gray-300 cursor-not-allowed shadow-none' 
+                    : 'bg-blue-600 hover:bg-blue-700 hover:scale-[1.01] active:scale-95 shadow-blue-200/50'}`}
               >
                 {loading ? (
                   <span className="flex items-center justify-center">
