@@ -47,6 +47,11 @@ const parseJSON = (value, helpers) => {
 };
 
 const createParkingSchema = Joi.object({
+  title: Joi.string().trim().max(100).required().messages({
+    "string.empty": "Parking title is required",
+    "string.max": "Title cannot exceed 100 characters",
+    "any.required": "Parking title is required",
+  }),
   location: Joi.custom(parseJSON).required().messages({
     "any.required": "Location is required",
     "any.invalid": "Location must be a valid JSON object",
@@ -55,6 +60,13 @@ const createParkingSchema = Joi.object({
     "number.min": "Price cannot be negative",
     "any.required": "Price per hour is required",
   }),
+  totalSlots: Joi.number().integer().min(1).required().messages({
+    "number.min": "Must have at least 1 slot",
+    "any.required": "Total slots is required",
+  }),
+  availableSlots: Joi.number().integer().min(0).required().messages({
+    "any.required": "Available slots is required",
+  }),
   availability: Joi.custom(parseJSON).required().messages({
     "any.required": "Availability is required",
     "any.invalid": "Availability must be a valid JSON object",
@@ -62,6 +74,7 @@ const createParkingSchema = Joi.object({
   description: Joi.string().allow("", null).trim().max(500).messages({
     "string.max": "Description cannot exceed 500 characters",
   }),
+  ownerId: Joi.string().allow("", null).optional(),
 });
 
 // ──────────────── Booking Validations ────────────────

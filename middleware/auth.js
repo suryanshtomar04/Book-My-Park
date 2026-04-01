@@ -21,7 +21,8 @@ const protect = async (req, res, next) => {
 
     // Dev-only admin token bypass
     if (token === "dev-admin-token") {
-      req.user = { role: "admin" };
+      const mongoose = require("mongoose");
+      req.user = { _id: new mongoose.Types.ObjectId(), role: "admin", name: "Dev Admin", email: "dev@admin.com" };
       return next();
     }
 

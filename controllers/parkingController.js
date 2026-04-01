@@ -16,9 +16,27 @@ const safeParse = (value) => {
  * @access  Private — owner
  */
 const createParking = catchAsync(async (req, res, next) => {
-  const location = safeParse(req.body.location);
+  const locationRaw = safeParse(req.body.location);
   const availability = safeParse(req.body.availability);
-  const { pricePerHour, description, title, totalSlots } = req.body;
+  const { pricePerHour, description, title, totalSlots, availableSlots } = req.body;
+
+  // Normalize location to GeoJSON format expected by Mongoose 2dsphere index
+  let location = locationRaw;
+  if (locationRaw) {
+    const coords = locationRaw.coordinates;
+    let geoCoords;
+    if (coords && typeof coords === 'object' && !Array.isArray(coords)) {
+      // Frontend sends { lat, lng } — convert to GeoJSON [lng, lat]
+      geoCoords = [parseFloat(coords.lng), parseFloat(coords.lat)];
+    } else if (Array.isArray(coords)) {
+      geoCoords = coords.map(Number);
+    }
+    location = {
+      type: 'Point',
+      coordinates: geoCoords,
+      address: locationRaw.address || '',
+    };
+  }
 
   let imageUrls = [];
   if (req.files && req.files.length > 0) {
@@ -34,7 +52,7 @@ const createParking = catchAsync(async (req, res, next) => {
     description, 
     title, 
     totalSlots,
-    availableSlots: totalSlots // Initial availability equals total capacity
+    availableSlots: availableSlots || totalSlots
   };
   const parking = await parkingService.createParking(req.user._id, parkingData, imageUrls);
 
