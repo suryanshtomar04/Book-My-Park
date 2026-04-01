@@ -40,9 +40,11 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     token,
+    setUser,
+    setToken,
     login,
     logout,
-    isAuthenticated: !!token,
+    isAuthenticated: !!token || user?.role === 'admin',
     isInitialized,
   };
 

@@ -8,8 +8,8 @@ export default function AddParking() {
   const { isAuthenticated, user, isInitialized } = useAuth();
 
   const [formData, setFormData] = useState({
-    title: '',
-    location: '',
+    parkingTitle: '',
+    locationAddress: '',
     pricePerHour: '',
     totalSlots: '',
     description: '',
@@ -38,32 +38,16 @@ export default function AddParking() {
     setLoading(true);
 
     try {
-      const payload = new FormData();
-      
-      // Hardcode some safe default coordinates since we don't have a map picker
-      // The backend requires valid coordinates [-180 to 180, -90 to 90]
-      const locationObj = {
-        type: 'Point',
-        coordinates: [77.3910, 28.5355], // Defaulting to Noida/NCR area for variety
-        address: formData.location
-      };
-      
-      const availabilityObj = {
-        startTime: '00:00',
-        endTime: '23:59'
+      const payload = {
+        title: formData.parkingTitle,
+        location: formData.locationAddress,
+        price: Number(formData.pricePerHour),
+        totalSlots: Number(formData.totalSlots),
+        availableSlots: Number(formData.totalSlots),
+        ownerId: user?.id || "dev-admin"
       };
 
-      payload.append('location', JSON.stringify(locationObj));
-      payload.append('availability', JSON.stringify(availabilityObj));
-      payload.append('pricePerHour', formData.pricePerHour);
-      payload.append('title', formData.title);
-      payload.append('totalSlots', formData.totalSlots);
-      payload.append('description', formData.description);
-      
-      if (image) {
-        payload.append('images', image);
-      }
-
+      console.log("PAYLOAD:", payload);
       await createParking(payload);
       
       // On success, redirect to dashboard
@@ -111,15 +95,15 @@ export default function AddParking() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-1.5">
+              <label htmlFor="parkingTitle" className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Parking Title
               </label>
               <input
                 type="text"
-                id="title"
-                name="title"
+                id="parkingTitle"
+                name="parkingTitle"
                 required
-                value={formData.title}
+                value={formData.parkingTitle}
                 onChange={handleChange}
                 placeholder="e.g. Downtown Premium Garage"
                 className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-gray-900"
@@ -127,15 +111,15 @@ export default function AddParking() {
             </div>
 
             <div>
-              <label htmlFor="location" className="block text-sm font-semibold text-gray-700 mb-1.5">
+              <label htmlFor="locationAddress" className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Location Address
               </label>
               <input
                 type="text"
-                id="location"
-                name="location"
+                id="locationAddress"
+                name="locationAddress"
                 required
-                value={formData.location}
+                value={formData.locationAddress}
                 onChange={handleChange}
                 placeholder="Sector 62, City Center"
                 className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-gray-900"

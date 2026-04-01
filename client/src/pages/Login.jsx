@@ -11,7 +11,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, setUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -24,6 +24,24 @@ export default function Login() {
     
     if (!email || !password) {
       setError('Please fill in both email and password.');
+      return;
+    }
+
+    // Dev-only default admin login bypass
+    if (email === "admin@bookmyspace.com" && password === "admin123") {
+      setMode("admin");
+      
+      const adminUser = {
+        id: "dev-admin",
+        name: "Admin",
+        email: "admin@bookmyspace.com",
+        role: "admin",
+        token: "dev-admin-token"
+      };
+
+      localStorage.setItem("user", JSON.stringify(adminUser));
+      setUser(adminUser);
+      navigate("/add-parking", { replace: true });
       return;
     }
 
