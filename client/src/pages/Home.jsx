@@ -343,13 +343,21 @@ export default function Home() {
             </FadeIn>
             
             <FadeIn delay={0.2}>
-              <div className="relative rounded-[2rem] overflow-hidden shadow-2xl lg:h-[540px] hidden sm:block group">
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-purple-500/10 mix-blend-multiply rounded-[2rem] z-10 w-full h-full"></div>
-                <img 
-                  src="https://images.unsplash.com/photo-1548345680-f5475ea90f46?q=80&w=1200&auto=format&fit=crop" 
-                  alt="Parking Experience" 
-                  className="w-full h-full object-cover rounded-[2rem] transform group-hover:scale-101 transition-transform duration-1000 ease-[0.4,0,0.2,1]"
-                />
+              <div className="relative lg:h-[540px] hidden sm:block">
+                {/* Subtle blur glow behind container */}
+                <div className="absolute inset-0 -z-10 blur-2xl opacity-20 bg-blue-200 rounded-2xl" />
+                
+                {/* Main Image Container */}
+                <div className="relative h-full rounded-2xl overflow-hidden shadow-sm border border-black/[0.04] group z-10">
+                  <img 
+                    src="/images/parking.png"
+                    alt="Smart parking overview"
+                    className="w-full h-full object-cover rounded-2xl transform group-hover:scale-[1.02] transition-transform duration-300 ease-out"
+                  />
+                  
+                  {/* Premium Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none rounded-2xl" />
+                </div>
               </div>
             </FadeIn>
           </div>
