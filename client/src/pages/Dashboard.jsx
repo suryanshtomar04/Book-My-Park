@@ -299,14 +299,12 @@ export default function Dashboard() {
             </motion.div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">No bookings yet</h3>
             <p className="text-gray-500 mb-6">You haven't reserved any parking spots so far.</p>
-            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
-              <Link 
-                to="/explore"
-                className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-medium btn-glow btn-ripple focus:outline-none"
-              >
-                Explore Parking Spots
-              </Link>
-            </motion.div>
+            <Link 
+              to="/explore"
+              className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-medium btn-glow btn-ripple focus:outline-none transition-transform duration-200 active:scale-[0.98] hover:scale-[1.01]"
+            >
+              Explore Parking Spots
+            </Link>
           </motion.div>
         ) : (
           <div className="space-y-6">
@@ -398,21 +396,17 @@ export default function Dashboard() {
                                   <svg className="w-3.5 h-3.5 text-blue-500 group-hover:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
                                   Navigate
                                 </motion.a>
-                                <motion.div className="flex-1" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}>
-                                  <Link to="/explore" className="w-full text-blue-700 font-semibold text-[12px] hover:text-blue-800 bg-blue-50 px-2 py-2 rounded-xl transition-all duration-300 border border-blue-100 hover:border-blue-200 hover:bg-blue-100 flex items-center justify-center gap-1 group focus:outline-none">
-                                    <svg className="w-3.5 h-3.5 text-blue-500 group-hover:rotate-45 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    Extend
-                                  </Link>
-                                </motion.div>
-                              </div>
-                            </>
-                          ) : (
-                            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}>
-                              <Link to="/explore" className="block text-center text-gray-600 font-medium text-sm hover:text-gray-900 bg-gray-50 px-5 py-2.5 rounded-xl transition-all duration-300 border border-black/[0.04] hover:bg-gray-100 focus:outline-none block">
-                                Book Again
+                              <Link to="/explore" className="w-full text-blue-700 font-semibold text-[12px] hover:text-blue-800 bg-blue-50 px-2 py-2 rounded-xl transition-all duration-300 border border-blue-100 hover:border-blue-200 hover:bg-blue-100 flex items-center justify-center gap-1 group focus:outline-none flex-1 active:scale-[0.98] hover:scale-[1.01]">
+                                <svg className="w-3.5 h-3.5 text-blue-500 group-hover:rotate-45 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                Extend
                               </Link>
-                            </motion.div>
-                          )}
+                            </div>
+                          </>
+                        ) : (
+                          <Link to="/explore" className="block text-center text-gray-600 font-medium text-sm hover:text-gray-900 bg-gray-50 px-5 py-2.5 rounded-xl transition-all duration-300 border border-black/[0.04] hover:bg-gray-100 focus:outline-none block active:scale-[0.98] hover:scale-[1.01]">
+                            Book Again
+                          </Link>
+                        )}
                         </div>
                       </div>
                     </div>

@@ -497,14 +497,12 @@ export default function Home() {
                 </p>
               </div>
               
-              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}>
-                <Link 
-                  to="/explore" 
-                  className="inline-flex items-center justify-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none btn-glow"
-                >
-                  Explore Spaces
-                </Link>
-              </motion.div>
+              <Link 
+                to="/explore" 
+                className="inline-flex items-center justify-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none btn-glow hover:scale-[1.01] active:scale-[0.98]"
+              >
+                Explore Spaces
+              </Link>
 
               {/* TRUST LINE */}
               <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm font-medium text-gray-400 mt-2">

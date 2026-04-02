@@ -163,15 +163,13 @@ export default function ParkingDetails() {
                 </div>
 
                 {/* Confirm Action */}
-                <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
-                  <Link 
-                    to="/booking"
-                    state={{ ...DUMMY_PARKING }}
-                    className="block text-center w-full px-5 py-3 mt-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-[15px] font-medium rounded-xl transition-all duration-200 ease-out focus:outline-none btn-glow btn-ripple shadow-lg shadow-blue-500/15"
-                  >
-                    Reserve Space
-                  </Link>
-                </motion.div>
+                <Link 
+                  to="/booking"
+                  state={{ ...DUMMY_PARKING }}
+                  className="block text-center w-full px-5 py-3 mt-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-[15px] font-medium rounded-xl transition-all duration-200 ease-out focus:outline-none btn-glow btn-ripple shadow-lg shadow-blue-500/15 hover:scale-[1.01] active:scale-[0.98]"
+                >
+                  Reserve Space
+                </Link>
 
                 <p className="text-center text-[13px] text-gray-400 font-medium mt-4">
                   You won't be charged yet

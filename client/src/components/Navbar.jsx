@@ -201,24 +201,20 @@ export default function Navbar() {
         ) : (
           <>
             {/* Sign Up Link */}
-            <motion.div>
-              <Link 
-                to="/register" 
-                className="hidden sm:block text-[13px] font-medium text-white/55 hover:text-white tracking-wide transition-all duration-200 px-4 py-2 rounded-full hover:bg-white/[0.06]"
-              >
-                Sign Up
-              </Link>
-            </motion.div>
+            <Link 
+              to="/register" 
+              className="hidden sm:block text-[13px] font-medium text-white/55 hover:text-white tracking-wide transition-all duration-200 px-4 py-2 rounded-full hover:bg-white/[0.06] active:scale-[0.98]"
+            >
+              Sign Up
+            </Link>
 
             {/* Login Button */}
-            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}>
-              <Link  
-                to="/login" 
-                className="px-6 py-2.5 bg-blue-600 text-white text-[13px] font-semibold rounded-full transition-all duration-200 ease-out shadow-lg shadow-blue-500/10 hover:bg-blue-700 btn-glow focus:outline-none"
-              >
-                Login
-              </Link>
-            </motion.div>
+            <Link  
+              to="/login" 
+              className="px-6 py-2.5 bg-blue-600 text-white text-[13px] font-semibold rounded-full transition-all duration-200 ease-out shadow-lg shadow-blue-500/10 hover:bg-blue-700 hover:scale-[1.01] active:scale-[0.98] btn-glow focus:outline-none inline-block ml-2"
+            >
+              Login
+            </Link>
           </>
         )}
       </motion.div>
