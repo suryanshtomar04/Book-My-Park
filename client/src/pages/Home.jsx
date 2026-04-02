@@ -2,32 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import Hero from '../components/Hero';
 import { Link } from 'react-router-dom';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
-
-// ── Viewport fade + slide-up wrapper ──
-const FadeInView = ({ children, className = '', delay = 0 }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-60px' });
-  
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 24 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-      transition={{ duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-};
+import FadeIn from '../components/FadeIn';
+import AnimatedCounter from '../components/AnimatedCounter';
 
 // ── Fade animation configuration for sections ──
 const sectionRevealVariants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 16 },
   visible: { 
     opacity: 1, 
     y: 0, 
-    transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] } 
+    transition: { duration: 0.65, ease: [0.4, 0, 0.2, 1] } 
   }
 };
 
@@ -79,41 +63,10 @@ const stepCardVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
   },
 };
 
-const StatCounter = ({ end, duration = 2000, suffix = "+" }) => {
-  const [count, setCount] = useState(0);
-  const counterRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          let startTimestamp = null;
-          const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const easeProgress = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.floor(easeProgress * end));
-            if (progress < 1) {
-              window.requestAnimationFrame(step);
-            }
-          };
-          window.requestAnimationFrame(step);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (counterRef.current) observer.observe(counterRef.current);
-    return () => observer.disconnect();
-  }, [end, duration]);
-
-  return <span ref={counterRef}>{count}{count === end ? suffix : ''}</span>;
-};
 
 export default function Home() {
   const stepsRef = useRef(null);
@@ -173,10 +126,10 @@ export default function Home() {
         className="relative z-10 -mt-12 pt-28 pb-24 sm:pt-32 sm:pb-32 bg-white/80 backdrop-blur-xl rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.03)] border-t border-white/60"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeInView className="text-center mb-16">
+          <FadeIn className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 tracking-tight sm:text-4xl">How It Works</h2>
             <p className="mt-4 text-lg text-gray-500">Booking your perfect parking spot is just three steps away.</p>
-          </FadeInView>
+          </FadeIn>
           
           <div className="relative">
             {/* Scroll-driven animated connecting line */}
@@ -200,12 +153,11 @@ export default function Home() {
                 >
                   <motion.div
                     whileHover={{
-                      scale: 1.03,
-                      y: -6,
-                      boxShadow: '0 20px 50px -12px rgba(99, 102, 241, 0.15), 0 0 0 1px rgba(99, 102, 241, 0.08)',
+                      y: -2,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
                     }}
-                    transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-                    className="group relative flex flex-col items-center text-center cursor-default rounded-2xl p-8 bg-white border border-transparent hover:border-blue-100/60 transition-all duration-300"
+                    transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+                    className="group relative flex flex-col items-center text-center cursor-default rounded-2xl p-8 bg-white border border-black/[0.04] hover:border-gray-200 transition-all duration-300"
                   >
                     {/* Step number badge */}
                     <span className="text-gradient font-bold text-[17px] mb-3 z-10">{item.step}.</span>
@@ -225,8 +177,8 @@ export default function Home() {
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
-                          whileHover={{ scale: 1.12 }}
-                          transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
                         </motion.svg>
@@ -262,13 +214,13 @@ export default function Home() {
         </div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <FadeInView className="text-center mb-12">
+          <FadeIn className="text-center mb-12">
             <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl mb-1">
               <span className="text-gradient-animated">Premium</span>{' '}
               <span className="text-gray-900">Features</span>
             </h2>
             <p className="mt-4 text-[17px] text-gray-500 max-w-2xl mx-auto leading-relaxed">Everything you need for a seamless parking experience.</p>
-          </FadeInView>
+          </FadeIn>
           
           <motion.div
             initial="hidden"
@@ -293,7 +245,7 @@ export default function Home() {
                   visible: {
                     opacity: 1,
                     y: 0,
-                    transition: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] },
+                    transition: { duration: 0.55, ease: [0.4, 0, 0.2, 1] },
                   },
                 }}
               >
@@ -304,12 +256,12 @@ export default function Home() {
                   
                   {/* Card body */}
                   <motion.div
-                    whileHover={{ y: -10 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-                    className="relative h-full bg-white/70 backdrop-blur-sm p-8 rounded-2xl border border-gray-100/80 cursor-default
-                      shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)]
-                      hover:shadow-[0_25px_60px_-15px_rgba(99,102,241,0.2),_0_10px_30px_-10px_rgba(0,0,0,0.08)]
-                      hover:bg-white/90 hover:border-blue-100/60
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+                    className="relative h-full bg-white/70 backdrop-blur-sm p-8 rounded-2xl border border-black/[0.04] cursor-default
+                      shadow-sm
+                      hover:shadow-md
+                      hover:bg-white/90 hover:border-gray-200
                       transition-all duration-300 ease-out"
                   >
                     {/* Icon */}
@@ -348,7 +300,7 @@ export default function Home() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-            <FadeInView>
+            <FadeIn>
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 tracking-tight sm:text-4xl leading-tight mb-6">
                   Why Choose<br/><span className="text-gradient">BookMySpace</span>?
@@ -388,18 +340,61 @@ export default function Home() {
                   ))}
                 </ul>
               </div>
-            </FadeInView>
+            </FadeIn>
             
-            <FadeInView delay={0.2}>
+            <FadeIn delay={0.2}>
               <div className="relative rounded-[2rem] overflow-hidden shadow-2xl lg:h-[540px] hidden sm:block group">
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-purple-500/10 mix-blend-multiply rounded-[2rem] z-10 w-full h-full"></div>
                 <img 
                   src="https://images.unsplash.com/photo-1548345680-f5475ea90f46?q=80&w=1200&auto=format&fit=crop" 
                   alt="Parking Experience" 
-                  className="w-full h-full object-cover rounded-[2rem] transform group-hover:scale-105 transition-transform duration-[2000ms] ease-out"
+                  className="w-full h-full object-cover rounded-[2rem] transform group-hover:scale-101 transition-transform duration-1000 ease-[0.4,0,0.2,1]"
                 />
               </div>
-            </FadeInView>
+            </FadeIn>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* 4. Testimonials (Trust Element) */}
+      <motion.section 
+        variants={sectionRevealVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-10%' }}
+        className="relative z-35 -mt-12 pt-28 pb-20 bg-gray-50/50 backdrop-blur-xl border-t border-gray-200/50 rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.02)]"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col gap-12">
+          <FadeIn>
+            <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Driver Testimonials</h2>
+            <p className="mt-3 text-lg text-gray-500 max-w-2xl mx-auto">Don't just take our word for it—see what others are saying.</p>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { text: "I used to waste 20 minutes looking for parking every morning. Now I just book it from bed. Lifesaver.", author: "Sarah M.", role: "Daily Commuter", rating: 5 },
+              { text: "The app is incredibly smooth. I drove into the city, parked directly in my spot, and saved a ton compared to garage prices.", author: "James L.", role: "Weekend Traveler", rating: 5 },
+              { text: "Perfect for events. I booked a spot right next to the stadium and bypassed all the chaos.", author: "Priya K.", role: "Event Goer", rating: 4.5 },
+            ].map((t, idx) => (
+              <FadeIn key={idx} delay={idx * 0.1}>
+                <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm text-left flex flex-col h-full hover:shadow-md transition-shadow">
+                  <div className="flex gap-1 mb-4 text-amber-400">
+                    {[...Array(Math.floor(t.rating))].map((_, i) => <svg key={i} className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>)}
+                    {t.rating % 1 !== 0 && <svg className="w-4 h-4 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>}
+                  </div>
+                  <p className="text-gray-600 text-sm leading-relaxed mb-6 font-medium italic">"{t.text}"</p>
+                  <div className="mt-auto border-t border-gray-100 pt-4 flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center font-bold text-blue-700 text-xs">
+                      {t.author.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-gray-900">{t.author}</div>
+                      <div className="text-xs text-gray-500 font-medium">{t.role}</div>
+                    </div>
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
           </div>
         </div>
       </motion.section>
@@ -418,11 +413,11 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col gap-12 relative z-10">
           
           {/* HEADER */}
-          <FadeInView className="flex flex-col gap-3">
+          <FadeIn className="flex flex-col gap-3">
             <p className="text-gray-500 font-semibold uppercase tracking-widest text-sm">Trusted by thousands</p>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">Our Impact in Numbers</h2>
             <p className="text-gray-500 text-lg max-w-xl mx-auto">Helping drivers find parking faster, smarter, and stress-free.</p>
-          </FadeInView>
+          </FadeIn>
 
           {/* STATS */}
           <motion.div
@@ -447,7 +442,7 @@ export default function Home() {
                   visible: {
                     opacity: 1,
                     y: 0,
-                    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+                    transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] },
                   },
                 }}
               >
@@ -461,7 +456,7 @@ export default function Home() {
                     </svg>
                   </div>
                   <div className="text-3xl sm:text-[2rem] font-bold text-gray-900 mb-1 tracking-tight">
-                    <StatCounter end={stat.end} duration={2000} />
+                    <AnimatedCounter end={stat.end} duration={2000} suffix="+" />
                   </div>
                   <div className="text-gray-500 font-medium text-[15px]">{stat.label}</div>
                 </div>
@@ -470,18 +465,18 @@ export default function Home() {
           </motion.div>
 
           {/* CONNECTING TEXT */}
-          <FadeInView delay={0.2}>
+          <FadeIn delay={0.2}>
             <p className="text-[17px] font-medium text-gray-700">
               Join thousands of drivers who trust BookMySpace daily.
             </p>
-          </FadeInView>
+          </FadeIn>
 
           {/* CTA FOCAL POINT */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className="w-full max-w-3xl mx-auto mt-4"
           >
             <div className="flex flex-col items-center gap-6 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-[2.5rem] shadow-sm p-10 sm:p-14">
@@ -494,12 +489,14 @@ export default function Home() {
                 </p>
               </div>
               
-              <Link 
-                to="/explore" 
-                className="inline-flex items-center justify-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg active:scale-95 transition-all duration-200"
-              >
-                Explore Spaces
-              </Link>
+              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}>
+                <Link 
+                  to="/explore" 
+                  className="inline-flex items-center justify-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none btn-glow"
+                >
+                  Explore Spaces
+                </Link>
+              </motion.div>
 
               {/* TRUST LINE */}
               <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm font-medium text-gray-400 mt-2">
@@ -530,16 +527,16 @@ export default function Home() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
           
-          <FadeInView>
+          <FadeIn>
             <motion.div 
-              whileHover={{ scale: 1.05 }} 
+              whileHover={{ scale: 1.02 }} 
               className="text-[22px] font-bold tracking-tight cursor-pointer mb-8"
             >
               <Link to="/" className="text-gradient">BookMySpace</Link>
             </motion.div>
-          </FadeInView>
+          </FadeIn>
 
-          <FadeInView delay={0.1}>
+          <FadeIn delay={0.1}>
             <ul className="flex flex-wrap justify-center gap-x-10 gap-y-4 mb-12 text-[14px] font-semibold tracking-wide text-gray-400">
               {[
                 { to: '/', label: 'Home' },
@@ -561,15 +558,15 @@ export default function Home() {
                 </motion.li>
               ))}
             </ul>
-          </FadeInView>
+          </FadeIn>
 
-          <FadeInView delay={0.2}>
+          <FadeIn delay={0.2}>
             <div className="w-full max-w-[800px] mx-auto h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-8"></div>
             
             <p className="text-[13px] font-medium text-gray-400 tracking-wide text-center">
               &copy; {new Date().getFullYear()} BookMySpace Platform. All rights reserved.
             </p>
-          </FadeInView>
+          </FadeIn>
         </div>
       </motion.footer>
       </div> {/* end content wrapper */}

@@ -92,7 +92,7 @@ export default function Register() {
             { id: 'confirmPassword', label: 'Confirm Password', type: 'password', placeholder: '••••••••', autoComplete: 'new-password' },
           ].map((field) => (
             <div key={field.id}>
-              <label htmlFor={field.id} className="block text-sm font-semibold text-gray-700 mb-1.5">
+              <label htmlFor={field.id} className="block text-[13px] font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
                 {field.label}
               </label>
               <input
@@ -112,10 +112,11 @@ export default function Register() {
           <motion.button
             type="submit"
             disabled={loading}
-            whileHover={!loading ? { scale: 1.02 } : {}}
-            whileTap={!loading ? { scale: 0.97 } : {}}
-            className={`w-full px-5 py-3 mt-2 text-white text-lg font-medium rounded-xl transition-all duration-200 ease-out btn-ripple
-              ${loading ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none' : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:shadow-lg hover:shadow-blue-500/20 btn-glow'}`}
+            whileHover={!loading ? { scale: 1.01 } : {}}
+            whileTap={!loading ? { scale: 0.98 } : {}}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+            className={`w-full px-5 py-3 mt-2 text-white text-lg font-medium rounded-xl focus:outline-none btn-ripple
+              ${loading ? 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none' : 'bg-blue-600 hover:bg-blue-700 btn-glow'}`}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">

@@ -98,7 +98,7 @@ export default function ParkingDetails() {
                   ].map((amenity, idx) => (
                     <motion.div
                       key={idx}
-                      whileHover={{ scale: 1.03, y: -2 }}
+                      whileHover={{ scale: 1.01, y: -2 }}
                       className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 border border-gray-100 cursor-default"
                     >
                       <motion.div
@@ -163,7 +163,7 @@ export default function ParkingDetails() {
                 </div>
 
                 {/* Confirm Action */}
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+                <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
                   <Link 
                     to="/booking"
                     state={{ ...DUMMY_PARKING }}

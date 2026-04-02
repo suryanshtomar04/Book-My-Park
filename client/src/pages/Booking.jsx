@@ -35,7 +35,8 @@ const Booking = () => {
   const { user, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [successMsg, setSuccessMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const [startDate, setStartDate] = useState('');
   const [startTime, setStartTime] = useState('');
@@ -63,7 +64,7 @@ const Booking = () => {
   const serviceFee = 20.00;
   const finalTotal = totalPrice > 0 ? totalPrice + serviceFee : 0;
 
-  const handleBooking = async (e) => {
+  const handleBookingSubmit = (e) => {
     e.preventDefault();
     if (!isAuthenticated || !user) {
       setError('You must be logged in to book a parking spot.');
@@ -80,6 +81,11 @@ const Booking = () => {
     }
 
     setError(null);
+    setShowModal(true);
+  };
+
+  const confirmBooking = async () => {
+    setShowModal(false);
     setLoading(true);
 
     try {
@@ -100,13 +106,12 @@ const Booking = () => {
       const existingBookings = JSON.parse(localStorage.getItem('demoBookings') || '[]');
       localStorage.setItem('demoBookings', JSON.stringify([demoBooking, ...existingBookings]));
 
-      setSuccessMsg('Booking confirmed successfully! Redirecting to dashboard...');
+      setSuccessMsg(true);
       setTimeout(() => {
-        navigate('/dashboard');
-      }, 2000);
+        navigate('/dashboard', { state: { newBooking: true, bookingId: demoBooking._id } });
+      }, 1500);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to complete booking. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
@@ -211,22 +216,7 @@ const Booking = () => {
               )}
             </AnimatePresence>
             
-            <AnimatePresence>
-              {successMsg && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="mb-6 p-4 rounded-xl bg-green-50 border border-green-100 text-green-600 text-sm font-medium flex items-center gap-2 success-pulse"
-                >
-                  <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {successMsg}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <form onSubmit={handleBooking} className="space-y-6">
+            <form onSubmit={handleBookingSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[
                   { id: 'start-date', label: 'Start Date', type: 'date', value: startDate, onChange: setStartDate },
@@ -315,9 +305,9 @@ const Booking = () => {
 
               <motion.button
                 type="submit"
-                disabled={loading || !!successMsg}
-                whileHover={!loading && !successMsg ? { scale: 1.02 } : {}}
-                whileTap={!loading && !successMsg ? { scale: 0.97 } : {}}
+                disabled={loading || successMsg}
+                whileHover={!loading && !successMsg ? { scale: 1.01 } : {}}
+                whileTap={!loading && !successMsg ? { scale: 0.95 } : {}}
                 className={`w-full px-5 py-3.5 rounded-xl font-medium text-lg transition-all duration-200 ease-out mt-4 text-white btn-ripple
                 ${loading || successMsg ? 'bg-gray-300 cursor-not-allowed text-gray-500' : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:shadow-lg hover:shadow-blue-500/20 btn-glow'}`}
               >
@@ -327,14 +317,7 @@ const Booking = () => {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    Processing...
-                  </span>
-                ) : successMsg ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Success!
+                    Booking...
                   </span>
                 ) : 'Book Now'}
               </motion.button>
@@ -342,6 +325,85 @@ const Booking = () => {
           </motion.div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm"
+              onClick={() => setShowModal(false)}
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white rounded-2xl shadow-xl z-10 w-full max-w-md overflow-hidden relative"
+            >
+              <div className="p-6 text-center sm:text-left">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Confirm Booking</h3>
+                
+                <div className="space-y-4 mb-6">
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                    <p className="font-bold text-gray-900 mb-1">{title || 'Downtown Premium Garage'}</p>
+                    <p className="text-sm text-gray-500 flex items-center justify-center sm:justify-start gap-1 mb-3">
+                      <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                      {parkingLocation || '123 Main Street, City Center'}
+                    </p>
+                    <div className="flex justify-between border-t border-gray-200 mt-2 pt-3">
+                      <span className="text-sm text-gray-500 font-medium">Rate:</span>
+                      <span className="text-sm font-bold text-gray-900">₹{parseFloat(price || 50).toFixed(2)} / hr</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-2 px-1">
+                    <span className="text-sm font-medium text-gray-600">Estimated Total:</span>
+                    <span className="text-xl font-bold text-blue-600">₹{finalTotal.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-8">
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="flex-1 px-4 py-3 rounded-xl font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmBooking}
+                    className="flex-1 px-4 py-3 rounded-xl font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm"
+                  >
+                    Confirm Booking
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {successMsg && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            className="fixed bottom-10 inset-x-0 mx-auto z-50 bg-white border border-green-200 shadow-xl rounded-2xl p-4 flex items-center gap-4 w-[320px]"
+          >
+            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+              <svg className="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-bold text-green-700">Booking Confirmed!</p>
+              <p className="text-sm text-gray-500">Redirecting to dashboard...</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

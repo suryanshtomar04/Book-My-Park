@@ -40,8 +40,8 @@ export default function Navbar() {
         initial={{ opacity: 0, x: -12 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.1, duration: 0.5, ease: 'easeOut' }}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
+        whileHover={{ scale: 1.01 }}
+        whileTap={{ scale: 0.98 }}
         className="text-xl font-semibold tracking-tight cursor-pointer"
       >
         <Link to="/" className="text-gradient font-bold text-lg">BookMySpace</Link>
@@ -61,8 +61,6 @@ export default function Navbar() {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 + index * 0.08, duration: 0.4, ease: 'easeOut' }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
             >
               <Link
                 to={item.to}
@@ -121,8 +119,9 @@ export default function Navbar() {
           ) : (
             <>
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.15 }}
                 onClick={() => {
                   const manual = prompt('Enter your city to view nearby parking:', address || '');
                   if (manual) setManualLocation(manual);
@@ -148,8 +147,9 @@ export default function Navbar() {
 
               {error && (
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
                   onClick={fetchUserLocation}
                   className="px-3.5 py-2 bg-blue-500/15 hover:bg-blue-500/25 text-blue-300 text-[11px] font-semibold rounded-full transition-all duration-200 whitespace-nowrap shadow-sm border border-blue-400/20 hover:shadow-md hover:shadow-blue-500/15"
                 >
@@ -167,7 +167,7 @@ export default function Navbar() {
           <>
             {/* User Avatar Pill */}
             <motion.div
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.01 }}
               className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] hover:bg-white/[0.10] hover:border-white/[0.14] transition-all duration-200 cursor-default"
             >
               {/* Avatar Circle */}
@@ -186,8 +186,9 @@ export default function Navbar() {
 
             {/* Logout Button */}
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
               onClick={handleLogout}
               className="group flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2 bg-white/[0.06] text-white/60 text-[13px] font-medium rounded-full hover:bg-red-500/15 hover:text-red-300 hover:border-red-400/20 transition-all duration-200 ease-out border border-white/[0.08]"
             >
@@ -200,7 +201,7 @@ export default function Navbar() {
         ) : (
           <>
             {/* Sign Up Link */}
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+            <motion.div>
               <Link 
                 to="/register" 
                 className="hidden sm:block text-[13px] font-medium text-white/55 hover:text-white tracking-wide transition-all duration-200 px-4 py-2 rounded-full hover:bg-white/[0.06]"
@@ -210,10 +211,10 @@ export default function Navbar() {
             </motion.div>
 
             {/* Login Button */}
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link 
+            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}>
+              <Link  
                 to="/login" 
-                className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[13px] font-semibold rounded-full transition-all duration-200 ease-out shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 btn-glow"
+                className="px-6 py-2.5 bg-blue-600 text-white text-[13px] font-semibold rounded-full transition-all duration-200 ease-out shadow-lg shadow-blue-500/10 hover:bg-blue-700 btn-glow focus:outline-none"
               >
                 Login
               </Link>

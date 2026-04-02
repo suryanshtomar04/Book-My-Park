@@ -5,26 +5,34 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
-  background-color: #0B0F19;
-  color: rgba(255, 255, 255, 0.85);
+  background-color: #F8FAFC;
+  color: #111827;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ── Global Micro-Motion Baseline (duration: 300ms, ease-out curve) ── */
-/* Every interactive element gets a consistent, buttery-smooth transition */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Sora', system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+/* ── Global Micro-Motion Baseline (duration: 250ms, ease-out curve) ── */
+/* Every interactive element gets a consistent, fast, smooth transition */
 a, button, input, select, textarea,
 [role="button"], [tabindex], .hover-lift, .card {
   transition-property: color, background-color, border-color, box-shadow, transform, opacity, filter;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-duration: 250ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Prevent layout-shift jank for non-interactive elements */
 *, *::before, *::after {
   transition-property: color, background-color, border-color, box-shadow, opacity;
   transition-duration: 200ms;
-  transition-timing-function: ease-out;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Let explicit Tailwind/Framer transitions win safely */
@@ -35,23 +43,21 @@ a, button, input, select, textarea,
 }
 
 /* ── Global Micro-Interactions (Hovers & Glows) ── */
-/* Base button hover: slight lift and soft glow */
+/* Base button hover: extremely subtle stable lift */
 button:not(:disabled):hover:not(.navbar-glass button), 
 a.btn:hover, 
 [role="button"]:hover:not(.no-glow) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px -4px rgba(59, 130, 246, 0.25);
 }
 
 /* Reset on active click */
-button:not(:disabled):active, a.btn:active {
-  transform: translateY(0);
-  box-shadow: none;
+button:not(:disabled):active, a.btn:active, [role="button"]:active:not(.no-glow) {
+  transform: translateY(0) scale(0.99);
 }
 
 /* Icon micro-scale in interactive elements */
 button svg, a svg, [role="button"] svg {
-  transition: transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 button:hover svg:not(.no-scale), 
@@ -135,15 +141,14 @@ a:hover svg:not(.no-scale),
   animation: shimmer 1.8s infinite ease-in-out;
 }
 
-/* ── Card Glow Effect on Hover ── */
+/* ── Card Glow Effect on Hover (Soft Multi-Layer Shadow) ── */
 .card-glow {
-  transition: box-shadow 0.35s ease, border-color 0.35s ease, transform 0.3s ease;
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 3px 8px rgba(0, 0, 0, 0.02);
 }
 .card-glow:hover {
-  box-shadow:
-    0 20px 60px -15px rgba(59, 130, 246, 0.12),
-    0 0 0 1px rgba(59, 130, 246, 0.08);
-  border-color: rgba(59, 130, 246, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 12px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* ── Button Ripple Effect ── */
@@ -180,30 +185,31 @@ a:hover svg:not(.no-scale),
   animation: ripple 0.5s ease-out;
 }
 
-/* ── Button Glow on Hover ── */
+/* ── Button Glow on Hover (Premium Soft Illumination) ── */
 .btn-glow {
-  transition: box-shadow 0.25s ease, transform 0.15s ease;
+  transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1), transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .btn-glow:hover {
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 4px 15px rgba(59, 130, 246, 0.15);
-}
-.btn-glow:active {
-  transform: scale(0.96);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2), 0 1px 2px rgba(59, 130, 246, 0.1);
+  filter: brightness(1.05);
 }
 
-/* ── Input Focus Glow ── */
+/* ── Input Focus Glow (Controlled thin ring) ── */
 .input-glow {
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  background-color: #F9FAFB;
 }
 .input-glow:focus {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15), 0 0 15px rgba(59, 130, 246, 0.08);
-  border-color: rgba(59, 130, 246, 0.5);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 1px #3B82F6, 0 4px 12px rgba(59, 130, 246, 0.06);
+  border-color: #3B82F6;
 }
 
 /* ── Textarea Focus Glow ── */
 textarea.input-glow:focus {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15), 0 0 15px rgba(59, 130, 246, 0.08);
-  border-color: rgba(59, 130, 246, 0.5);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 1px #3B82F6, 0 4px 12px rgba(59, 130, 246, 0.06);
+  border-color: #3B82F6;
 }
 
 /* ── Animated Loading Dots ── */
@@ -225,42 +231,56 @@ textarea.input-glow:focus {
 .loading-dots span:nth-child(2) { animation-delay: 0.16s; }
 .loading-dots span:nth-child(3) { animation-delay: 0.32s; }
 
-/* ── Marker Bounce Animation (Leaflet Custom) ── */
-@keyframes marker-drop {
+/* ── Safe Marker Drop Animation (Leaflet compatible) ── */
+@keyframes marker-drop-safe {
   0% {
-    transform: translate(-50%, -200%);
+    margin-top: -50px;
     opacity: 0;
   }
-  50% {
-    opacity: 1;
-  }
-  70% {
-    transform: translate(-50%, -95%);
-  }
-  85% {
-    transform: translate(-50%, -105%);
-  }
   100% {
-    transform: translate(-50%, -100%);
+    margin-top: 0;
+    opacity: 1;
   }
 }
 
 .leaflet-marker-icon {
-  animation: marker-drop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation: marker-drop-safe 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-/* Stagger marker drop with attr selector */
+/* Stagger marker drop */
 .leaflet-marker-icon:nth-of-type(2) { animation-delay: 0.1s; }
 .leaflet-marker-icon:nth-of-type(3) { animation-delay: 0.2s; }
 .leaflet-marker-icon:nth-of-type(4) { animation-delay: 0.3s; }
 .leaflet-marker-icon:nth-of-type(5) { animation-delay: 0.35s; }
 
+/* ── Interactive Map Marker Utilities ── */
+.hover-scale-marker {
+  transition: width 0.2s ease, height 0.2s ease, margin 0.2s ease, filter 0.2s ease !important;
+}
+.hover-scale-marker:hover {
+  /* standard icon: 25x41 -> ~28x46 */
+  width: 28px !important;
+  height: 46px !important;
+  margin-left: -14px !important; /* anchor x */
+  margin-top: -46px !important; /* anchor y */
+  filter: drop-shadow(0 6px 12px rgba(59, 130, 246, 0.5)) brightness(1.1) !important;
+  z-index: 1000 !important;
+}
+
 /* ── Active Marker Highlight ── */
 .active-marker {
   filter: hue-rotate(200deg) brightness(1.3) drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
   z-index: 1000 !important;
-  transform: scale(1.25);
-  transition: transform 0.3s ease, filter 0.3s ease;
+  transition: width 0.2s ease, height 0.2s ease, margin 0.2s ease, filter 0.2s ease;
+}
+
+.active-marker:hover {
+  /* highlighted icon: 32x48 -> ~36x54 */
+  width: 36px !important;
+  height: 54px !important;
+  margin-left: -18px !important;
+  margin-top: -54px !important;
+  filter: hue-rotate(200deg) brightness(1.4) drop-shadow(0 0 16px rgba(59, 130, 246, 0.7)) !important;
 }
 
 /* ── Navbar Glassmorphism ── */
@@ -352,9 +372,9 @@ textarea.input-glow:focus {
 
 /* ── Smooth focus ring for all interactive elements ── */
 :focus-visible {
-  outline: 2px solid rgba(59, 130, 246, 0.5);
-  outline-offset: 2px;
-  border-radius: 0.5rem;
+  outline: 2px solid rgba(59, 130, 246, 0.6);
+  outline-offset: 1px;
+  border-radius: 0.375rem;
 }
 
 /* ── Subtle gradient backgrounds for sections ── */
@@ -439,7 +459,7 @@ textarea.input-glow:focus {
 }
 
 .reveal.revealed {
-  animation: reveal-up 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: reveal-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 /* ── Stagger helper — delay children reveal ── */
@@ -451,12 +471,12 @@ textarea.input-glow:focus {
 
 /* ── Enhanced hover lift — reusable on any clickable element ── */
 .hover-lift {
-  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
               box-shadow 0.25s ease;
 }
 .hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px -8px rgba(99, 102, 241, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 .hover-lift:active {
   transform: translateY(0);

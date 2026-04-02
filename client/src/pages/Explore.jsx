@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import ParkingCard from '../components/ParkingCard';
 import SkeletonCard from '../components/SkeletonCard';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
@@ -9,40 +9,37 @@ import { useLocation } from '../context/LocationContext';
 import { useLocation as useRouterLocation } from 'react-router-dom';
 import { calculateDistance } from '../utils/distance';
 import { motion, AnimatePresence } from 'framer-motion';
+import FadeIn from '../components/FadeIn';
 
 // Fix for default Leaflet marker icons in React/Vite
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-
 delete L.Icon.Default.prototype._getIconUrl;
+
 L.Icon.Default.mergeOptions({
-  iconUrl: markerIcon,
-  iconRetinaUrl: markerIcon2x,
-  shadowUrl: markerShadow,
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
 // Custom highlighted marker icon
 const highlightedIcon = new L.Icon({
-  iconUrl: markerIcon,
-  iconRetinaUrl: markerIcon2x,
-  shadowUrl: markerShadow,
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
   iconSize: [32, 48],
   iconAnchor: [16, 48],
   popupAnchor: [0, -48],
   shadowSize: [50, 64],
   shadowAnchor: [15, 64],
-  className: 'active-marker',
+  className: 'active-marker leaflet-marker-pulse',
 });
 
-const defaultIcon = new L.Icon({
-  iconUrl: markerIcon,
-  iconRetinaUrl: markerIcon2x,
-  shadowUrl: markerShadow,
+const customIcon = new L.Icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
+  className: 'leaflet-marker-drop hover-scale-marker',
 });
 
 // Fallback center if location completely fails
@@ -57,7 +54,7 @@ function MapFlyToUpdater({ activeParkingId, parkings, markerRefs }) {
       const activeLocation = parkings.find(p => p._id === activeParkingId);
       if (activeLocation && activeLocation.location && activeLocation.location.coordinates) {
         const [lng, lat] = activeLocation.location.coordinates;
-        map.flyTo([lat, lng], 15, {
+        map.flyTo([lat, lng], 16, { /* zoomed closer */
           animate: true,
           duration: 1.2
         });
@@ -87,16 +84,18 @@ function MapZoomAnimator() {
   return null;
 }
 
-const FilterPill = ({ label }) => (
+const SortPill = ({ label, active, onClick }) => (
   <motion.button
-    whileHover={{ scale: 1.05 }}
+    onClick={onClick}
+    whileHover={{ scale: 1.01 }}
     whileTap={{ scale: 0.95 }}
-    className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 hover:border-gray-800 hover:text-gray-900 hover:brightness-95 rounded-full text-[13px] font-medium text-gray-700 transition-all duration-150 ease-out whitespace-nowrap focus:outline-none focus:ring-1 focus:ring-gray-300 shadow-sm"
+    className={`flex items-center gap-1.5 px-4 py-2 border rounded-full text-[13px] font-medium transition-all duration-150 ease-out whitespace-nowrap focus:outline-none focus:ring-1 shadow-sm ${
+      active 
+        ? 'bg-blue-50 border-blue-200 text-blue-700 ring-blue-300 shadow-blue-500/10' 
+        : 'bg-white border-gray-200 text-gray-600 hover:border-gray-800 hover:text-gray-900 pointer-events-auto'
+    }`}
   >
     {label}
-    <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-    </svg>
   </motion.button>
 );
 
@@ -140,27 +139,6 @@ const defaultParkings = [
   },
 ];
 
-// Card stagger animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 30, filter: 'blur(4px)' },
-  show: { 
-    opacity: 1, 
-    y: 0, 
-    filter: 'blur(0px)',
-    transition: { duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
 
 export default function Explore() {
   const { lat, lng, address, loading: locationLoading } = useLocation();
@@ -171,6 +149,7 @@ export default function Explore() {
   const cardRefs = useRef({});
   const [parkings, setParkings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState('Nearest');
 
   // Refetch on every navigation to /explore
   useEffect(() => {
@@ -199,8 +178,28 @@ export default function Explore() {
     ...parkings,
   ];
 
+  const getDistance = useCallback((parking) => {
+    const pLng = parking.location?.coordinates?.[0];
+    const pLat = parking.location?.coordinates?.[1];
+    return (lat && lng && pLat && pLng) 
+      ? calculateDistance(lat, lng, pLat, pLng)
+      : Infinity;
+  }, [lat, lng]);
+
+  const sortedParkings = useMemo(() => {
+    let arr = [...displayParkings];
+    if (sortBy === 'Cheapest') {
+      arr.sort((a, b) => (a.pricePerHour || 0) - (b.pricePerHour || 0));
+    } else if (sortBy === 'Nearest' && lat && lng) {
+      arr.sort((a, b) => getDistance(a) - getDistance(b));
+    } else if (sortBy === 'Best Rated') {
+      arr.sort((a, b) => (b.rating || 5) - (a.rating || 5)); // dummy rating fallback
+    }
+    return arr;
+  }, [displayParkings, sortBy, lat, lng, getDistance]);
+
   // Center on first parking if exists, else fallback
-  const firstCoords = displayParkings[0]?.location?.coordinates;
+  const firstCoords = sortedParkings[0]?.location?.coordinates;
   const center = firstCoords
     ? [firstCoords[1], firstCoords[0]]
     : DEFAULT_CENTER;
@@ -212,6 +211,11 @@ export default function Explore() {
     if (cardEl) {
       cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+  }, []);
+
+  // When card is clicked → just set active (MapFlyToUpdater zooms automatically)
+  const handleCardClick = useCallback((parkingId) => {
+    setActiveParkingId(parkingId);
   }, []);
 
   // When hovering a card → highlight the marker
@@ -235,21 +239,11 @@ export default function Explore() {
         <div className="w-full">
           
           {/* Premium Header Area */}
-          <div className="pt-[110px] px-8 lg:px-12 pb-6 bg-white">
-            <motion.h1
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl lg:text-[2.75rem] font-bold text-gray-900 tracking-tight leading-none"
-            >
+          <FadeIn className="pt-[110px] px-8 lg:px-12 pb-6 bg-white">
+            <h1 className="text-4xl lg:text-[2.75rem] font-bold text-gray-900 tracking-tight leading-none mb-4">
               Spaces nearby
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-[15px] text-gray-500 font-medium mt-4 tracking-wide"
-            >
+            </h1>
+            <p className="text-[15px] text-gray-500 font-medium tracking-wide">
               {loading ? (
                 <span className="flex items-center gap-1.5">
                   Finding best spots near you
@@ -260,15 +254,14 @@ export default function Explore() {
               ) : (
                 `${displayParkings.length} premium locations available for instant booking`
               )}
-            </motion.p>
-          </div>
+            </p>
+          </FadeIn>
 
           {/* Sticky Filtering Bar */}
           <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-y border-gray-100 px-8 lg:px-12 py-3 flex items-center gap-3 overflow-x-auto hide-scrollbar shadow-sm">
-            <FilterPill label="Price" />
-            <FilterPill label="Availability" />
-            <FilterPill label="Distance" />
-            <FilterPill label="Space Type" />
+            <SortPill label="Nearest" active={sortBy === 'Nearest'} onClick={() => setSortBy('Nearest')} />
+            <SortPill label="Cheapest" active={sortBy === 'Cheapest'} onClick={() => setSortBy('Cheapest')} />
+            <SortPill label="Best Rated" active={sortBy === 'Best Rated'} onClick={() => setSortBy('Best Rated')} />
           </div>
 
           {/* Cards Stack */}
@@ -280,13 +273,8 @@ export default function Explore() {
                 <SkeletonCard index={2} />
               </>
             ) : (
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="show"
-                className="flex flex-col gap-8"
-              >
-                {displayParkings.map((parking) => {
+              <FadeIn delay={0.1} className="flex flex-col gap-8">
+                {sortedParkings.map((parking) => {
                   const pLng = parking.location?.coordinates?.[0];
                   const pLat = parking.location?.coordinates?.[1];
                   const distance = (lat && lng && pLat && pLng) 
@@ -294,26 +282,27 @@ export default function Explore() {
                     : null;
                     
                   return (
-                    <motion.div key={parking._id} variants={cardVariants}>
+                    <div key={parking._id}>
                       <ParkingCard
                         ref={(el) => { if (el) cardRefs.current[parking._id] = el; }}
                         id={parking._id}
                         title={parking.title || parking.description?.substring(0, 40) || 'Premium Parking Spot'}
                         location={parking.location?.address || 'City Center'}
                         price={parking.pricePerHour}
-                        availability={parking.availableSlots > 0 ? 'Available' : 'Full'}
+                        availableSlots={parking.availableSlots}
+                        totalSlots={parking.totalSlots}
+                        distance={distance}
                         image={parking.images?.[0] || 'https://images.unsplash.com/photo-1590674899484-ac33d3c80cd8?q=80&w=800&auto=format&fit=crop'}
                         isActive={activeParkingId === parking._id}
                         isHovered={hoveredParkingId === parking._id}
-                        distance={distance}
-                        onClick={() => setActiveParkingId(parking._id)}
+                        onClick={() => handleCardClick(parking._id)}
                         onHoverStart={() => handleCardHoverStart(parking._id)}
                         onHoverEnd={handleCardHoverEnd}
                       />
-                    </motion.div>
+                    </div>
                   );
                 })}
-              </motion.div>
+              </FadeIn>
             )}
           </div>
 
@@ -342,32 +331,64 @@ export default function Explore() {
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
 
-          {/* Render markers with highlight state */}
-          {displayParkings.map((parking) => {
-            if (!parking.location || !parking.location.coordinates) return null;
-            const [lng, lat] = parking.location.coordinates;
-            const isHighlighted = activeParkingId === parking._id || hoveredParkingId === parking._id;
-            return (
-              <Marker 
-                key={`marker-${parking._id}`} 
-                position={[lat, lng]}
-                icon={isHighlighted ? highlightedIcon : defaultIcon}
-                ref={(ref) => {
-                  if (ref) markerRefs.current[parking._id] = ref;
-                }}
-                eventHandlers={{
-                  click: () => handleMarkerClick(parking._id)
-                }}
-              >
-                <Popup>
-                  <div className="p-1 min-w-[120px]">
-                    <h3 className="font-bold text-sm text-gray-900 mb-1">{parking.title || parking.description?.substring(0, 30) || 'Premium Parking Spot'}</h3>
-                    <p className="text-sm font-semibold text-blue-600">₹{parking.pricePerHour} / hr</p>
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+          {/* Render markers with highlight state and prevent overlaps */}
+          {(() => {
+            const coordsCount = {};
+            return sortedParkings.map((parking) => {
+              if (!parking.location || !parking.location.coordinates) return null;
+              let [lng, lat] = parking.location.coordinates;
+              
+              const key = `${lat},${lng}`;
+              const offsetIdx = coordsCount[key] || 0;
+              coordsCount[key] = offsetIdx + 1;
+              
+              // Apply slight lat/lng offset (~15m) to avoid complete marker overlap
+              if (offsetIdx > 0) {
+                 lat += (offsetIdx * 0.00015);
+                 lng += (offsetIdx * 0.00015);
+              }
+
+              const isHighlighted = activeParkingId === parking._id || hoveredParkingId === parking._id;
+              
+              return (
+                <Marker 
+                  key={`marker-${parking._id}-${offsetIdx}`} 
+                  position={[lat, lng]}
+                  icon={isHighlighted ? highlightedIcon : customIcon}
+                  zIndexOffset={isHighlighted ? 1000 : 0}
+                  ref={(ref) => {
+                    if (ref) markerRefs.current[parking._id] = ref;
+                  }}
+                  eventHandlers={{
+                    click: () => handleMarkerClick(parking._id)
+                  }}
+                >
+                  <Popup className="premium-popup">
+                    <div className="p-1 min-w-[180px]">
+                      <h3 className="font-bold text-sm text-gray-900 mb-1 line-clamp-2 leading-tight">
+                        {parking.title || parking.description?.substring(0, 40) || 'Premium Parking Spot'}
+                      </h3>
+                      <div className="flex justify-between items-center mt-2 pt-1 border-t border-gray-100">
+                        <span className="text-gray-500 text-[11px] font-semibold uppercase tracking-wider">Price</span>
+                        <span className="font-bold text-blue-600 text-sm">₹{parking.pricePerHour}/hr</span>
+                      </div>
+                      <div className="mt-2.5">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMarkerClick(parking._id);
+                          }}
+                          className="w-full py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95"
+                        >
+                          View & Book
+                        </button>
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+              );
+            });
+          })()}
         </MapContainer>
       </div>
       

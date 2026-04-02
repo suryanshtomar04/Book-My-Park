@@ -28,9 +28,19 @@ const FadeInView = ({ children, className = '', delay = 0 }) => {
 // Fix Leaflet default marker icon paths for Vite bundling
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+});
+
+const customIcon = new L.Icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+  className: 'leaflet-marker-drop hover-scale-marker',
 });
 
 // Reverse geocode coordinates → readable address using Nominatim
@@ -78,7 +88,7 @@ export default function AddParking() {
         setLocationAddress(address);
       },
     });
-    return selectedLocation ? <Marker position={selectedLocation} /> : null;
+    return selectedLocation ? <Marker position={selectedLocation} icon={customIcon} /> : null;
   };
 
   // ── Submit handler ──
