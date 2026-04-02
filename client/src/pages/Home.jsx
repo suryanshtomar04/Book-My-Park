@@ -3,7 +3,7 @@ import Hero from '../components/Hero';
 import { Link } from 'react-router-dom';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 
-// Viewport fade-in wrapper
+// ── Viewport fade + slide-up wrapper ──
 const FadeInView = ({ children, className = '', delay = 0 }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-60px' });
@@ -11,8 +11,8 @@ const FadeInView = ({ children, className = '', delay = 0 }) => {
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 24 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
       transition={{ duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
       className={className}
     >
@@ -21,7 +21,17 @@ const FadeInView = ({ children, className = '', delay = 0 }) => {
   );
 };
 
-// Animated connecting line that draws on scroll
+// ── Fade animation configuration for sections ──
+const sectionRevealVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] } 
+  }
+};
+
+// ── Animated connecting line that draws on scroll ──
 const ScrollDrawLine = () => {
   const lineRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -65,11 +75,11 @@ const stepContainerVariants = {
 };
 
 const stepCardVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
   },
 };
 
@@ -121,32 +131,26 @@ export default function Home() {
     <div className="flex flex-col min-h-screen relative">
       
       {/* ══════ ALIVE BACKGROUND LAYER ══════ */}
-      {/* White base — prevents dark body bleed-through */}
       <div className="fixed inset-0 bg-white z-0" aria-hidden="true" />
       
-      {/* Parallax gradient blobs — float on top of white base */}
+      {/* Parallax gradient blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
-        {/* Blob 1 — top-left blue (behind hero) */}
         <motion.div
           style={{ y: blobY1 }}
           className="absolute -top-[10%] -left-[5%] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-blue-200/20 via-blue-300/10 to-transparent blur-[100px] blob-animate"
         />
-        {/* Blob 2 — right-center purple (behind How It Works) */}
         <motion.div
           style={{ y: blobY2 }}
           className="absolute top-[25%] -right-[8%] w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-purple-200/15 via-indigo-200/10 to-transparent blur-[120px] blob-animate-reverse"
         />
-        {/* Blob 3 — center-left indigo (behind Features) */}
         <motion.div
           style={{ y: blobY3 }}
           className="absolute top-[50%] -left-[10%] w-[550px] h-[550px] rounded-full bg-gradient-to-tr from-indigo-200/12 via-blue-100/8 to-transparent blur-[110px] blob-animate-slow"
         />
-        {/* Blob 4 — bottom-right blue (behind Why Choose Us) */}
         <motion.div
           style={{ y: blobY4 }}
           className="absolute top-[70%] right-[5%] w-[450px] h-[450px] rounded-full bg-gradient-to-tl from-blue-200/15 via-purple-100/8 to-transparent blur-[100px] blob-animate"
         />
-        {/* Blob 5 — bottom-center purple (behind CTA) */}
         <motion.div
           style={{ y: blobY5 }}
           className="absolute top-[90%] left-[30%] w-[500px] h-[500px] rounded-full bg-gradient-to-r from-purple-200/12 via-blue-200/8 to-transparent blur-[130px] blob-animate-reverse"
@@ -154,7 +158,6 @@ export default function Home() {
       </div>
 
       {/* ══════ NOISE TEXTURE OVERLAY ══════ */}
-      {/* Very light grain over the entire page for depth — 2.5% opacity */}
       <div className="fixed inset-0 noise-texture pointer-events-none z-[1]" aria-hidden="true" />
 
       {/* ══════ PAGE CONTENT ══════ */}
@@ -162,7 +165,13 @@ export default function Home() {
       <Hero />
       
       {/* 1. How It Works Section */}
-      <section className="py-24 sm:py-32 bg-white/80 backdrop-blur-[1px]">
+      <motion.section 
+        variants={sectionRevealVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-10%' }}
+        className="relative z-10 -mt-12 pt-28 pb-24 sm:pt-32 sm:pb-32 bg-white/80 backdrop-blur-xl rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.03)] border-t border-white/60"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInView className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 tracking-tight sm:text-4xl">How It Works</h2>
@@ -196,16 +205,14 @@ export default function Home() {
                       boxShadow: '0 20px 50px -12px rgba(99, 102, 241, 0.15), 0 0 0 1px rgba(99, 102, 241, 0.08)',
                     }}
                     transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-                    className="group relative flex flex-col items-center text-center cursor-default rounded-2xl p-8 bg-white border border-transparent hover:border-blue-100/60"
+                    className="group relative flex flex-col items-center text-center cursor-default rounded-2xl p-8 bg-white border border-transparent hover:border-blue-100/60 transition-all duration-300"
                   >
                     {/* Step number badge */}
                     <span className="text-gradient font-bold text-[17px] mb-3 z-10">{item.step}.</span>
                     
                     {/* Icon container with soft gradient glow circle */}
                     <div className="relative mb-6 z-10">
-                      {/* Outer glow — soft blue/purple radial gradient */}
                       <div className="absolute inset-0 -m-4 rounded-full bg-gradient-to-br from-blue-400/10 via-purple-400/8 to-blue-300/5 blur-xl group-hover:from-blue-400/20 group-hover:via-purple-400/15 group-hover:to-blue-300/10 transition-all duration-500" />
-                      {/* Secondary animated glow ring */}
                       <div className="absolute inset-0 -m-2 rounded-full bg-gradient-to-tr from-blue-200/0 via-purple-200/0 to-blue-200/0 group-hover:from-blue-200/20 group-hover:via-purple-300/15 group-hover:to-blue-200/20 transition-all duration-500 scale-100 group-hover:scale-110" />
                       
                       <motion.div
@@ -234,28 +241,44 @@ export default function Home() {
             </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 2. Features Section */}
-      <section className="py-24 sm:py-32 bg-gradient-to-b from-gray-50 via-gray-50 to-white relative overflow-hidden">
-        {/* Ambient background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-blue-200/20 via-purple-200/10 to-transparent rounded-full blur-[120px] pointer-events-none" />
+      <motion.section 
+        variants={sectionRevealVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-10%' }}
+        className="relative z-20 -mt-12 pt-28 pb-24 sm:pt-32 sm:pb-32 bg-gradient-to-b from-gray-50/90 via-white to-gray-50/60 overflow-hidden rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.03)] border-t border-white"
+      >
+        {/* ── Background depth elements ── */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          {/* Large center glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-gradient-to-br from-blue-200/25 via-purple-200/15 to-indigo-100/10 rounded-full blur-[120px]" />
+          {/* Left accent blob */}
+          <div className="absolute top-[20%] -left-[5%] w-[350px] h-[350px] bg-gradient-to-br from-blue-100/20 to-transparent rounded-full blur-[90px]" />
+          {/* Right accent blob */}
+          <div className="absolute bottom-[15%] -right-[5%] w-[300px] h-[300px] bg-gradient-to-bl from-purple-100/15 to-transparent rounded-full blur-[80px]" />
+        </div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <FadeInView className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 tracking-tight sm:text-4xl">Premium Features</h2>
-            <p className="mt-4 text-lg text-gray-500">Everything you need for a seamless parking experience.</p>
+          <FadeInView className="text-center mb-12">
+            <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl mb-1">
+              <span className="text-gradient-animated">Premium</span>{' '}
+              <span className="text-gray-900">Features</span>
+            </h2>
+            <p className="mt-4 text-[17px] text-gray-500 max-w-2xl mx-auto leading-relaxed">Everything you need for a seamless parking experience.</p>
           </FadeInView>
           
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: '-80px' }}
+            viewport={{ once: true, margin: '-60px' }}
             variants={{
               hidden: {},
-              visible: { transition: { staggerChildren: 0.15 } },
+              visible: { transition: { staggerChildren: 0.12 } },
             }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"
           >
             {[
               { icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', title: 'Real-time availability', desc: 'See parking spaces as they become available. Never drive around the block looking again.' },
@@ -266,57 +289,63 @@ export default function Home() {
               <motion.div
                 key={idx}
                 variants={{
-                  hidden: { opacity: 0, y: 30 },
+                  hidden: { opacity: 0, y: 32 },
                   visible: {
                     opacity: 1,
                     y: 0,
-                    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
+                    transition: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] },
                   },
                 }}
               >
                 {/* Outer wrapper for gradient border glow on hover */}
-                <div className="group relative rounded-[1.5rem] p-[1px] transition-all duration-300">
-                  {/* Gradient border glow — hidden by default, visible on hover */}
-                  <div className="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-blue-400/0 via-purple-400/0 to-blue-500/0 group-hover:from-blue-400/40 group-hover:via-purple-400/30 group-hover:to-blue-500/40 transition-all duration-500 opacity-0 group-hover:opacity-100 blur-[1px]" />
+                <div className="group relative rounded-2xl p-[1px] transition-all duration-300 h-full">
+                  {/* Gradient border glow — visible on hover */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-400/0 via-purple-400/0 to-blue-500/0 group-hover:from-blue-400/40 group-hover:via-purple-400/30 group-hover:to-blue-500/40 transition-all duration-500 opacity-0 group-hover:opacity-100 blur-[1px]" />
                   
-                  {/* Card body — glass + depth */}
+                  {/* Card body */}
                   <motion.div
-                    whileHover={{ y: -8 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                    className="relative bg-white/60 backdrop-blur-sm p-7 rounded-[1.5rem] border border-white/40 shadow-sm cursor-default
-                      hover:shadow-[0_20px_60px_-15px_rgba(99,102,241,0.18),_0_8px_24px_-8px_rgba(0,0,0,0.06)]
-                      hover:bg-white/80 hover:border-white/60
+                    whileHover={{ y: -10 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+                    className="relative h-full bg-white/70 backdrop-blur-sm p-8 rounded-2xl border border-gray-100/80 cursor-default
+                      shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)]
+                      hover:shadow-[0_25px_60px_-15px_rgba(99,102,241,0.2),_0_10px_30px_-10px_rgba(0,0,0,0.08)]
+                      hover:bg-white/90 hover:border-blue-100/60
                       transition-all duration-300 ease-out"
                   >
-                    {/* Icon with rotation + scale on hover */}
+                    {/* Icon */}
                     <motion.div
-                      whileHover={{ scale: 1.18, rotate: 8 }}
+                      whileHover={{ scale: 1.15, rotate: 6 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                      className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative
+                      className="w-14 h-14 rounded-xl flex items-center justify-center mb-5 relative
                         bg-gradient-to-br from-blue-50 to-purple-50 text-blue-600
                         group-hover:from-blue-100 group-hover:to-purple-100
                         group-hover:shadow-lg group-hover:shadow-blue-200/40
                         transition-all duration-300 ease-out"
                     >
-                      {/* Subtle glow behind icon */}
                       <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/0 to-purple-400/0 group-hover:from-blue-400/15 group-hover:to-purple-400/10 blur-md transition-all duration-500" />
                       <svg className="w-7 h-7 relative z-10 group-hover:text-blue-700 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={feature.icon} />
                       </svg>
                     </motion.div>
                     
-                    <h3 className="text-[17px] font-extrabold text-gray-900 mb-3 group-hover:text-gray-800 transition-colors duration-200">{feature.title}</h3>
-                    <p className="text-gray-500 text-[14px] leading-relaxed group-hover:text-gray-600 transition-colors duration-200">{feature.desc}</p>
+                    <h3 className="text-[18px] font-black text-gray-900 mb-2.5 group-hover:text-gray-800 transition-colors duration-200">{feature.title}</h3>
+                    <p className="text-gray-500 text-[15px] leading-relaxed group-hover:text-gray-600 transition-colors duration-200">{feature.desc}</p>
                   </motion.div>
                 </div>
               </motion.div>
             ))}
           </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 3. Why Choose Us */}
-      <section className="py-24 sm:py-32 bg-white/80 backdrop-blur-[1px] overflow-hidden">
+      <motion.section 
+        variants={sectionRevealVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-10%' }}
+        className="relative z-30 -mt-12 pt-28 pb-24 sm:pt-32 sm:pb-32 bg-white/90 backdrop-blur-xl overflow-hidden rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.03)] border-t border-white/60"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <FadeInView>
@@ -341,7 +370,7 @@ export default function Home() {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.4, delay: idx * 0.1 }}
-                      className="flex items-start group"
+                      className="flex items-start group cursor-default"
                     >
                       <motion.div
                         whileHover={{ scale: 1.2 }}
@@ -352,8 +381,8 @@ export default function Home() {
                         </svg>
                       </motion.div>
                       <div className="ml-4">
-                        <h4 className="text-[17px] font-bold text-gray-900">{item.title}</h4>
-                        <p className="mt-1.5 text-gray-500 text-[14px] leading-relaxed">{item.desc}</p>
+                        <h4 className="text-[17px] font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-200">{item.title}</h4>
+                        <p className="mt-1.5 text-gray-500 text-[14px] leading-relaxed group-hover:text-gray-600 transition-colors duration-200">{item.desc}</p>
                       </div>
                     </motion.li>
                   ))}
@@ -373,90 +402,176 @@ export default function Home() {
             </FadeInView>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* 4. Stats Section */}
-      <section className="py-16 sm:py-20 bg-gradient-to-r from-blue-600 via-blue-600 to-purple-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center divide-y sm:divide-y-0 sm:divide-x divide-blue-400/30">
+      {/* 4. Combined Impact & CTA Section — Premium Tinted SaaS */}
+      <motion.section 
+        variants={sectionRevealVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-10%' }}
+        className="relative z-40 py-24 bg-gradient-to-b from-white to-blue-50/40 border-t border-blue-50"
+      >
+        {/* Soft Ambient Overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(99,102,241,0.04)_0%,_transparent_70%)] pointer-events-none" />
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col gap-12 relative z-10">
+          
+          {/* HEADER */}
+          <FadeInView className="flex flex-col gap-3">
+            <p className="text-gray-500 font-semibold uppercase tracking-widest text-sm">Trusted by thousands</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">Our Impact in Numbers</h2>
+            <p className="text-gray-500 text-lg max-w-xl mx-auto">Helping drivers find parking faster, smarter, and stress-free.</p>
+          </FadeInView>
+
+          {/* STATS */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.12 } },
+            }}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-6"
+          >
             {[
-              { end: 1000, label: 'Parking Spaces' },
-              { end: 500, label: 'Happy Drivers' },
-              { end: 50, label: 'Active Cities' },
+              { end: 1000, label: 'Parking Spaces', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
+              { end: 500, label: 'Happy Drivers', icon: 'M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+              { end: 50, label: 'Active Cities', icon: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
             ].map((stat, idx) => (
-              <FadeInView key={idx} delay={idx * 0.15}>
-                <div className="py-4 sm:py-0 flex flex-col items-center">
-                  <div className="text-4xl sm:text-[2.75rem] font-extrabold text-white mb-2 tracking-tight">
+              <motion.div
+                key={idx}
+                variants={{
+                  hidden: { opacity: 0, y: 28 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+                  },
+                }}
+              >
+                <div
+                  className="bg-white rounded-2xl border border-blue-100 shadow-sm p-6 
+                    hover:shadow-md hover:border-blue-200 hover:-translate-y-1 transition-all duration-200"
+                >
+                  <div className="w-12 h-12 mx-auto rounded-xl bg-blue-50/80 flex items-center justify-center mb-4 transition-colors duration-200">
+                    <svg className="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={stat.icon} />
+                    </svg>
+                  </div>
+                  <div className="text-3xl sm:text-[2rem] font-bold text-gray-900 mb-1 tracking-tight">
                     <StatCounter end={stat.end} duration={2000} />
                   </div>
-                  <div className="text-blue-100 font-medium tracking-widest uppercase text-[12px]">{stat.label}</div>
+                  <div className="text-gray-500 font-medium text-[15px]">{stat.label}</div>
                 </div>
-              </FadeInView>
+              </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Call To Action */}
-      <section className="py-24 sm:py-32 bg-gradient-to-r from-blue-50 via-purple-50/30 to-blue-100 text-center relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-full bg-white/30 blur-[100px] rounded-full pointer-events-none"></div>
-        
-        <FadeInView className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <h2 className="text-5xl font-black text-gray-900 tracking-tight sm:text-6xl md:text-[4rem] mb-6 leading-tight">Find parking near you now</h2>
-          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-            Join thousands of smart drivers who reserve their perfect parking spots ahead of time. Stop searching, start arriving.
-          </p>
-          <motion.div whileHover={{ scale: 1.04, y: -3 }} whileTap={{ scale: 0.97 }} className="inline-block">
-            <Link 
-              to="/explore" 
-              className="inline-flex items-center justify-center px-10 py-5 sm:px-12 sm:py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-[20px] font-bold rounded-full transition-all duration-200 ease-out shadow-[0_10px_30px_rgb(37,99,235,0.3)] hover:shadow-[0_15px_40px_rgb(37,99,235,0.4)] group btn-ripple"
-            >
-              Explore Spaces
-              <svg className="ml-3 w-6 h-6 group-hover:translate-x-1.5 transition-transform duration-300 text-blue-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </Link>
           </motion.div>
-          
-          <p className="mt-8 text-[13px] font-bold text-blue-800/50 uppercase tracking-[0.2em]">
-            No fees • Instant booking • Secure
-          </p>
-        </FadeInView>
-      </section>
 
-      {/* 6. Footer */}
-      <footer className="bg-white/90 backdrop-blur-[1px] border-t border-gray-100 pt-20 pb-10">
+          {/* CONNECTING TEXT */}
+          <FadeInView delay={0.2}>
+            <p className="text-[17px] font-medium text-gray-700">
+              Join thousands of drivers who trust BookMySpace daily.
+            </p>
+          </FadeInView>
+
+          {/* CTA FOCAL POINT */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="w-full max-w-3xl mx-auto mt-4"
+          >
+            <div className="flex flex-col items-center gap-6 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-[2.5rem] shadow-sm p-10 sm:p-14">
+              <div className="flex flex-col gap-2">
+                <h2 className="text-3xl sm:text-[2.5rem] font-semibold text-gray-900 tracking-tight leading-[1.15]">
+                  Find parking <span className="text-blue-600">near you now</span>
+                </h2>
+                <p className="text-gray-500 text-lg max-w-md mx-auto mt-2">
+                  Reserve your spot in seconds. No stress. No waiting.
+                </p>
+              </div>
+              
+              <Link 
+                to="/explore" 
+                className="inline-flex items-center justify-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg active:scale-95 transition-all duration-200"
+              >
+                Explore Spaces
+              </Link>
+
+              {/* TRUST LINE */}
+              <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm font-medium text-gray-400 mt-2">
+                {[
+                  { label: 'No hidden fees' },
+                  { label: 'Instant booking' },
+                  { label: 'Secure platform' },
+                ].map((badge, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <span className="text-blue-500 font-bold">✓</span>
+                    {badge.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+        </div>
+      </motion.section>
+
+      {/* 6. Footer — Premium Finish */}
+      <motion.footer 
+        variants={sectionRevealVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-10%' }}
+        className="relative z-[60] -mt-12 bg-white/95 backdrop-blur-xl pt-24 pb-12 rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border-t border-white/80"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
           
-          <motion.div whileHover={{ scale: 1.05 }} className="text-[22px] font-bold tracking-tight cursor-pointer mb-8">
-            <Link to="/" className="text-gradient">BookMySpace</Link>
-          </motion.div>
-          
-          <ul className="flex flex-wrap justify-center gap-x-10 gap-y-4 mb-12 text-[14px] font-semibold tracking-wide text-gray-500">
-            {[
-              { to: '/', label: 'Home' },
-              { to: '/explore', label: 'Explore' },
-              { to: '/dashboard', label: 'Dashboard' },
-              { href: '#', label: 'About Us' },
-              { href: '#', label: 'Contact' },
-            ].map((link, idx) => (
-              <li key={idx}>
-                {link.to ? (
-                  <Link to={link.to} className="hover:text-blue-600 transition-colors duration-150 ease-out">{link.label}</Link>
-                ) : (
-                  <a href={link.href} className="hover:text-blue-600 transition-colors duration-150 ease-out">{link.label}</a>
-                )}
-              </li>
-            ))}
-          </ul>
+          <FadeInView>
+            <motion.div 
+              whileHover={{ scale: 1.05 }} 
+              className="text-[22px] font-bold tracking-tight cursor-pointer mb-8"
+            >
+              <Link to="/" className="text-gradient">BookMySpace</Link>
+            </motion.div>
+          </FadeInView>
 
-          <div className="w-full max-w-[800px] mx-auto h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-8"></div>
-          
-          <p className="text-[13px] font-medium text-gray-400 tracking-wide text-center">
-            &copy; {new Date().getFullYear()} BookMySpace Platform. All rights reserved.
-          </p>
+          <FadeInView delay={0.1}>
+            <ul className="flex flex-wrap justify-center gap-x-10 gap-y-4 mb-12 text-[14px] font-semibold tracking-wide text-gray-400">
+              {[
+                { to: '/', label: 'Home' },
+                { to: '/explore', label: 'Explore' },
+                { to: '/dashboard', label: 'Dashboard' },
+                { href: '#', label: 'About Us' },
+                { href: '#', label: 'Contact' },
+              ].map((link, idx) => (
+                <motion.li 
+                  key={idx}
+                  whileHover={{ y: -2 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                >
+                  {link.to ? (
+                    <Link to={link.to} className="hover:text-blue-600 transition-all duration-200 ease-out link-underline hover-text-glow">{link.label}</Link>
+                  ) : (
+                    <a href={link.href} className="hover:text-blue-600 transition-all duration-200 ease-out link-underline hover-text-glow">{link.label}</a>
+                  )}
+                </motion.li>
+              ))}
+            </ul>
+          </FadeInView>
+
+          <FadeInView delay={0.2}>
+            <div className="w-full max-w-[800px] mx-auto h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-8"></div>
+            
+            <p className="text-[13px] font-medium text-gray-400 tracking-wide text-center">
+              &copy; {new Date().getFullYear()} BookMySpace Platform. All rights reserved.
+            </p>
+          </FadeInView>
         </div>
-      </footer>
+      </motion.footer>
       </div> {/* end content wrapper */}
     </div>
   );

@@ -19,7 +19,7 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mb-6"
           >
-            <span className="text-gray-900 font-bold text-[12px] sm:text-[13px] tracking-[0.2em] uppercase">
+            <span className="text-gray-900 font-bold text-[12px] sm:text-[13px] tracking-[0.2em] uppercase inline-block px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-50/80 to-purple-50/80 border border-blue-100/50">
               The Smarter Way to Park
             </span>
           </motion.div>
@@ -31,7 +31,7 @@ export default function Hero() {
             className="text-5xl sm:text-6xl md:text-7xl font-black text-gray-900 leading-[1.05] mb-6 tracking-tight"
           >
             Find Your <br/>
-            <span className="text-gradient">Perfect</span> Space
+            <span className="text-gradient-animated">Perfect</span> Space
           </motion.h1>
           
           <motion.p
@@ -65,7 +65,7 @@ export default function Hero() {
               <motion.div whileHover={{ scale: 1.03, y: -2 }} whileTap={{ scale: 0.97 }}>
                 <Link 
                   to="/add-parking" 
-                  className="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 font-bold text-[16px] px-8 py-4 rounded-xl transition-all duration-200"
+                  className="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 hover:border-blue-200 font-bold text-[16px] px-8 py-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-blue-100/30"
                 >
                   List Your Space
                 </Link>
