@@ -103,7 +103,7 @@ export default function ParkingDetails() {
                     >
                       <motion.div
                         whileHover={{ scale: 1.15, rotate: 5 }}
-                        className="w-10 h-10 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg flex items-center justify-center flex-shrink-0"
+                        className="w-10 h-10 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center flex-shrink-0"
                       >
                         <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={amenity.icon} />

@@ -32,11 +32,11 @@ const ScrollDrawLine = () => {
       aria-hidden="true"
     >
       {/* Static faint track */}
-      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-100/40 via-purple-100/40 to-blue-100/40" />
+      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-100/40 via-blue-200/40 to-blue-100/40" />
       {/* Animated drawn line */}
       <motion.div
         style={{ scaleX, opacity, transformOrigin: 'left' }}
-        className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400"
+        className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-blue-500 to-blue-400"
       />
       {/* Glowing tip that follows the line */}
       <motion.div
@@ -44,7 +44,7 @@ const ScrollDrawLine = () => {
           left: useTransform(scaleX, v => `${v * 100}%`),
           opacity: useTransform(scrollYProgress, [0, 0.05, 0.95, 1], [0, 1, 1, 0]),
         }}
-        className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-purple-400 shadow-[0_0_12px_4px_rgba(139,92,246,0.5)]"
+        className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_12px_4px_rgba(59,130,246,0.5)]"
       />
     </div>
   );
@@ -94,19 +94,19 @@ export default function Home() {
         />
         <motion.div
           style={{ y: blobY2 }}
-          className="absolute top-[25%] -right-[8%] w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-purple-200/15 via-indigo-200/10 to-transparent blur-[120px] blob-animate-reverse"
+          className="absolute top-[25%] -right-[8%] w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-blue-200/15 via-blue-100/10 to-transparent blur-[120px] blob-animate-reverse"
         />
         <motion.div
           style={{ y: blobY3 }}
-          className="absolute top-[50%] -left-[10%] w-[550px] h-[550px] rounded-full bg-gradient-to-tr from-indigo-200/12 via-blue-100/8 to-transparent blur-[110px] blob-animate-slow"
+          className="absolute top-[50%] -left-[10%] w-[550px] h-[550px] rounded-full bg-gradient-to-tr from-blue-200/12 via-blue-100/8 to-transparent blur-[110px] blob-animate-slow"
         />
         <motion.div
           style={{ y: blobY4 }}
-          className="absolute top-[70%] right-[5%] w-[450px] h-[450px] rounded-full bg-gradient-to-tl from-blue-200/15 via-purple-100/8 to-transparent blur-[100px] blob-animate"
+          className="absolute top-[70%] right-[5%] w-[450px] h-[450px] rounded-full bg-gradient-to-tl from-blue-200/15 via-blue-100/8 to-transparent blur-[100px] blob-animate"
         />
         <motion.div
           style={{ y: blobY5 }}
-          className="absolute top-[90%] left-[30%] w-[500px] h-[500px] rounded-full bg-gradient-to-r from-purple-200/12 via-blue-200/8 to-transparent blur-[130px] blob-animate-reverse"
+          className="absolute top-[90%] left-[30%] w-[500px] h-[500px] rounded-full bg-gradient-to-r from-blue-200/12 via-blue-100/8 to-transparent blur-[130px] blob-animate-reverse"
         />
       </div>
 
@@ -164,13 +164,13 @@ export default function Home() {
                     
                     {/* Icon container with soft gradient glow circle */}
                     <div className="relative mb-6 z-10">
-                      <div className="absolute inset-0 -m-4 rounded-full bg-gradient-to-br from-blue-400/10 via-purple-400/8 to-blue-300/5 blur-xl group-hover:from-blue-400/20 group-hover:via-purple-400/15 group-hover:to-blue-300/10 transition-all duration-500" />
-                      <div className="absolute inset-0 -m-2 rounded-full bg-gradient-to-tr from-blue-200/0 via-purple-200/0 to-blue-200/0 group-hover:from-blue-200/20 group-hover:via-purple-300/15 group-hover:to-blue-200/20 transition-all duration-500 scale-100 group-hover:scale-110" />
+                      <div className="absolute inset-0 -m-4 rounded-full bg-gradient-to-br from-blue-400/10 via-blue-300/8 to-blue-300/5 blur-xl group-hover:from-blue-400/20 group-hover:via-blue-300/15 group-hover:to-blue-300/10 transition-all duration-500" />
+                      <div className="absolute inset-0 -m-2 rounded-full bg-gradient-to-tr from-blue-200/0 via-blue-200/0 to-blue-200/0 group-hover:from-blue-200/20 group-hover:via-blue-300/15 group-hover:to-blue-200/20 transition-all duration-500 scale-100 group-hover:scale-110" />
                       
                       <motion.div
                         whileHover={{ scale: 1.08 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                        className="relative w-28 h-28 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full flex items-center justify-center p-4 border border-blue-100/50 group-hover:border-blue-200/80 group-hover:from-blue-100/80 group-hover:to-purple-100/80 transition-all duration-300 ease-out shadow-sm group-hover:shadow-md group-hover:shadow-blue-200/30"
+                        className="relative w-28 h-28 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center p-4 border border-blue-100/50 group-hover:border-blue-200/80 group-hover:from-blue-100/80 group-hover:to-blue-200/80 transition-all duration-300 ease-out shadow-sm group-hover:shadow-md group-hover:shadow-blue-200/30"
                       >
                         <motion.svg
                           className="w-12 h-12 text-blue-600 group-hover:text-blue-700 transition-colors duration-300"
@@ -206,11 +206,11 @@ export default function Home() {
         {/* ── Background depth elements ── */}
         <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
           {/* Large center glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-gradient-to-br from-blue-200/25 via-purple-200/15 to-indigo-100/10 rounded-full blur-[120px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-gradient-to-br from-blue-200/25 via-blue-100/15 to-blue-50/10 rounded-full blur-[120px]" />
           {/* Left accent blob */}
           <div className="absolute top-[20%] -left-[5%] w-[350px] h-[350px] bg-gradient-to-br from-blue-100/20 to-transparent rounded-full blur-[90px]" />
           {/* Right accent blob */}
-          <div className="absolute bottom-[15%] -right-[5%] w-[300px] h-[300px] bg-gradient-to-bl from-purple-100/15 to-transparent rounded-full blur-[80px]" />
+          <div className="absolute bottom-[15%] -right-[5%] w-[300px] h-[300px] bg-gradient-to-bl from-blue-100/15 to-transparent rounded-full blur-[80px]" />
         </div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -252,7 +252,7 @@ export default function Home() {
                 {/* Outer wrapper for gradient border glow on hover */}
                 <div className="group relative rounded-2xl p-[1px] transition-all duration-300 h-full">
                   {/* Gradient border glow — visible on hover */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-400/0 via-purple-400/0 to-blue-500/0 group-hover:from-blue-400/40 group-hover:via-purple-400/30 group-hover:to-blue-500/40 transition-all duration-500 opacity-0 group-hover:opacity-100 blur-[1px]" />
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-400/0 via-blue-300/0 to-blue-500/0 group-hover:from-blue-400/40 group-hover:via-blue-300/30 group-hover:to-blue-500/40 transition-all duration-500 opacity-0 group-hover:opacity-100 blur-[1px]" />
                   
                   {/* Card body */}
                   <motion.div
@@ -269,12 +269,12 @@ export default function Home() {
                       whileHover={{ scale: 1.15, rotate: 6 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                       className="w-14 h-14 rounded-xl flex items-center justify-center mb-5 relative
-                        bg-gradient-to-br from-blue-50 to-purple-50 text-blue-600
-                        group-hover:from-blue-100 group-hover:to-purple-100
+                        bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600
+                        group-hover:from-blue-100 group-hover:to-blue-200
                         group-hover:shadow-lg group-hover:shadow-blue-200/40
                         transition-all duration-300 ease-out"
                     >
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/0 to-purple-400/0 group-hover:from-blue-400/15 group-hover:to-purple-400/10 blur-md transition-all duration-500" />
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/0 to-blue-300/0 group-hover:from-blue-400/15 group-hover:to-blue-300/10 blur-md transition-all duration-500" />
                       <svg className="w-7 h-7 relative z-10 group-hover:text-blue-700 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={feature.icon} />
                       </svg>
@@ -326,7 +326,7 @@ export default function Home() {
                     >
                       <motion.div
                         whileHover={{ scale: 1.2 }}
-                        className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center mt-0.5 border border-blue-100 group-hover:from-blue-600 group-hover:to-purple-600 transition-all duration-300"
+                        className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center mt-0.5 border border-blue-100 group-hover:from-blue-600 group-hover:to-blue-700 transition-all duration-300"
                       >
                         <svg className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -392,7 +392,7 @@ export default function Home() {
                   </div>
                   <p className="text-gray-600 text-sm leading-relaxed mb-6 font-medium italic">"{t.text}"</p>
                   <div className="mt-auto border-t border-gray-100 pt-4 flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center font-bold text-blue-700 text-xs">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center font-bold text-blue-700 text-xs">
                       {t.author.charAt(0)}
                     </div>
                     <div>

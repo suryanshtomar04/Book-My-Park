@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const AnimatedCounter = ({ end, duration = 1000, suffix = "", prefix = "" }) => {
+const AnimatedCounter = ({ end, duration = 1000, suffix = "", prefix = "", decimals = 0 }) => {
   const [count, setCount] = useState(0);
   const counterRef = useRef(null);
 
@@ -14,7 +14,7 @@ const AnimatedCounter = ({ end, duration = 1000, suffix = "", prefix = "" }) => 
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
             // easeOut cubic
             const easeProgress = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.floor(easeProgress * end));
+            setCount(easeProgress * end);
             if (progress < 1) {
               window.requestAnimationFrame(step);
             }
@@ -30,8 +30,10 @@ const AnimatedCounter = ({ end, duration = 1000, suffix = "", prefix = "" }) => 
     return () => observer.disconnect();
   }, [end, duration]);
 
-  // Format with commas for larger numbers
-  const formattedCount = count.toLocaleString('en-US');
+  // Format with commas for larger numbers or fixed decimals
+  const formattedCount = decimals > 0 
+    ? count.toFixed(decimals)
+    : Math.floor(count).toLocaleString('en-US');
 
   return (
     <span ref={counterRef}>

@@ -19,7 +19,7 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mb-6"
           >
-            <span className="text-gray-900 font-bold text-[12px] sm:text-[13px] tracking-[0.2em] uppercase inline-block px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-50/80 to-purple-50/80 border border-blue-100/50">
+            <span className="text-gray-900 font-bold text-[12px] sm:text-[13px] tracking-[0.2em] uppercase inline-block px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-50/80 to-blue-100/60 border border-blue-100/50">
               The Smarter Way to Park
             </span>
           </motion.div>
