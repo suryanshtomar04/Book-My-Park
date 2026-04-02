@@ -22,14 +22,14 @@ const pageVariants = {
 
 const pageTransition = {
   duration: 0.4,
-  ease: [0.25, 0.46, 0.45, 0.94], // easeOutQuad
+  ease: [0.4, 0, 0.2, 1], // ease out cubic
 };
 
 export default function Layout() {
   const location = useLocation();
 
   return (
-    <div className="bg-[#0B0F19] min-h-screen text-white/90">
+    <div className="bg-white min-h-screen text-gray-900">
       <Navbar />
       <AnimatePresence mode="wait">
         <motion.main
