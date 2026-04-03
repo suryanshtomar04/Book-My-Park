@@ -169,6 +169,14 @@ export default function Dashboard() {
     longestTimeRemainingStr = `${hours}h ${minutes}m`;
   }
 
+  const getParkingImage = (title) => {
+    const t = title?.toLowerCase() || "";
+    if (t.includes("highway")) return "/images/parking1.jpg";
+    if (t.includes("modinagar")) return "/images/parking2.jpg";
+    if (t.includes("city")) return "/images/parking3.jpg";
+    return "/images/parking1.jpg";
+  };
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 sm:px-6 lg:px-8 pt-32 text-gray-900">
       <div className="max-w-5xl mx-auto">
@@ -311,6 +319,12 @@ export default function Dashboard() {
                 const location = booking.parkingId?.location?.address || '123 Main Street, City Center';
                 const isNew = newBookingId === (booking._id || booking.id);
 
+                const imageUrl = booking.parkingId?.images?.[0]
+                  ? `http://localhost:5000${booking.parkingId.images[0]}`
+                  : null;
+                  
+                const finalImage = imageUrl || getParkingImage(parkingName);
+
                 return (
                   <motion.div
                     key={booking._id || booking.id || i}
@@ -329,7 +343,7 @@ export default function Dashboard() {
                       <div className="flex gap-4 flex-col sm:flex-row">
                         <div className="w-full sm:w-32 h-40 sm:h-24 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
                           <img
-                            src={booking.parkingId?.images?.[0] ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${booking.parkingId.images[0]}` : '/images/parking1.jpg'}
+                            src={finalImage}
                             alt={parkingName}
                             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                           />

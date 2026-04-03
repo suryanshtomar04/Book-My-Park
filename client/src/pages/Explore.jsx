@@ -305,6 +305,10 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
                     ? calculateDistance(lat, lng, pLat, pLng)
                     : null;
                   
+                  const imageUrl = parking.images?.[0]
+                    ? `http://localhost:5000${parking.images[0]}`
+                    : null;
+
                   return (
                     <div key={parking._id}>
                       <ParkingCard
@@ -316,6 +320,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
                         availableSlots={parking.availableSlots}
                         totalSlots={parking.totalSlots}
                         distance={distance}
+                        image={imageUrl}
                         isActive={activeParkingId === parking._id}
                         isHovered={hoveredParkingId === parking._id}
                         onClick={() => handleCardClick(parking._id)}

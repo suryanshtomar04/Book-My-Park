@@ -103,9 +103,7 @@ const ParkingCard = forwardRef(({
   const isFull = availableSlots !== undefined ? availableSlots === 0 : availability?.toLowerCase() === 'full';
 
   const getParkingImage = (title) => {
-    if (!title) return "/images/parking1.jpg";
-
-    const t = title.toLowerCase().trim();
+    const t = title?.toLowerCase() || "";
 
     if (t.includes("highway")) return "/images/parking1.jpg";
     if (t.includes("modinagar")) return "/images/parking2.jpg";
@@ -116,6 +114,8 @@ const ParkingCard = forwardRef(({
 
   console.log("TITLE:", title);
   console.log("IMG:", getParkingImage(title));
+
+  const finalImage = image || getParkingImage(title);
 
   return (
     <motion.div
@@ -141,7 +141,7 @@ const ParkingCard = forwardRef(({
       {/* Image Container */}
       <div className="relative w-full sm:w-[280px] xl:w-[320px] h-[200px] sm:h-full aspect-[4/3] overflow-hidden rounded-xl bg-gray-100 flex-shrink-0">
         <img 
-          src={getParkingImage(title)} 
+          src={finalImage} 
           alt={title} 
           className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
