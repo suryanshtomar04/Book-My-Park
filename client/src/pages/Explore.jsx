@@ -289,7 +289,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
           </div>
 
           {/* Cards Stack */}
-          <div className="flex flex-col gap-8 px-8 lg:px-12 pt-8 pb-20">
+          <div className="flex flex-col gap-4 px-8 lg:px-12 pt-8 pb-20">
             {loading || locationLoading ? (
               <>
                 <SkeletonCard index={0} />
@@ -297,7 +297,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
                 <SkeletonCard index={2} />
               </>
             ) : (
-              <FadeIn delay={0.1} className="flex flex-col gap-8">
+              <FadeIn delay={0.1} className="flex flex-col gap-4">
                 {sortedParkings.map((parking) => {
                   const pLng = parking.location?.coordinates?.[0];
                   const pLat = parking.location?.coordinates?.[1];

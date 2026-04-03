@@ -74,34 +74,20 @@ const ParkingCard = forwardRef(({
     }
   };
 
-  let badgeText = availability || 'Available';
-  let badgeColor = 'bg-green-500';
-  let badgeTextColor = 'text-gray-800';
-  let pulseClass = 'animate-pulse';
-  
-  if (availableSlots !== undefined) {
-    if (availableSlots === 0) {
-      badgeText = 'Full';
-      badgeColor = 'bg-red-500';
-      badgeTextColor = 'text-red-700';
-      pulseClass = '';
-    } else if (availableSlots <= 2 || (totalSlots > 0 && availableSlots / totalSlots <= 0.15)) {
-      badgeText = 'Almost full';
-      badgeColor = 'bg-orange-500';
-      badgeTextColor = 'text-orange-700';
-    } else {
-      badgeText = `${availableSlots} spots left`;
-      badgeColor = 'bg-green-500';
-      badgeTextColor = 'text-green-700';
-    }
-  } else if (availability?.toLowerCase() === 'full') {
-    badgeText = 'Full';
-    badgeColor = 'bg-red-500';
-    badgeTextColor = 'text-red-700';
-    pulseClass = '';
-  }
-
   const isFull = availableSlots !== undefined ? availableSlots === 0 : availability?.toLowerCase() === 'full';
+
+  let smartStatusText = "";
+  let smartStatusColor = "";
+  if (isFull) {
+    smartStatusText = "Full";
+    smartStatusColor = "text-red-600";
+  } else if (availableSlots <= 5) {
+    smartStatusText = "Almost Full";
+    smartStatusColor = "text-yellow-600";
+  } else {
+    smartStatusText = "Available";
+    smartStatusColor = "text-green-600";
+  }
 
   const getParkingImage = (title) => {
     const t = title?.toLowerCase() || "";
@@ -125,99 +111,93 @@ const ParkingCard = forwardRef(({
       onHoverStart={onHoverStart}
       onHoverEnd={onHoverEnd}
       whileHover={{ y: -1, scale: 1.0 }}
-      whileTap={{ scale: 0.99 }}
-      transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-      className={`bg-white rounded-[1.25rem] border overflow-hidden flex flex-col sm:flex-row group w-full p-2.5 sm:p-3 gap-5 sm:gap-6 h-auto sm:h-[220px] cursor-pointer card-glow
+      className={`flex gap-5 p-5 rounded-2xl bg-white/80 backdrop-blur-md border border-gray-200/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out hover:border-blue-200 group cursor-pointer overflow-hidden w-full
         ${isActive 
           ? 'border-blue-400 shadow-[0_4px_16px_rgba(59,130,246,0.12)] bg-blue-50/10' 
           : isHovered
             ? 'border-gray-300'
-            : 'border-black/[0.04]'
+            : ''
         }`}
       style={{
-        transition: 'border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease',
+        transition: 'border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease',
       }}
     >
       
       {/* Image Container */}
-      <div className="relative w-full sm:w-[280px] xl:w-[320px] h-[200px] sm:h-full aspect-[4/3] overflow-hidden rounded-xl bg-gray-100 flex-shrink-0">
+      <div className="relative w-[180px] h-[110px] rounded-xl overflow-hidden flex-shrink-0 group">
         <img 
           src={finalImage} 
           alt={title} 
-          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
         {/* Availability Badge */}
-        <div className={`absolute top-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5 border border-gray-100 ${badgeTextColor}`}>
-          <span className={`w-2 h-2 rounded-full ${badgeColor} ${pulseClass}`}></span>
-          <span className="text-[10px] font-bold tracking-wider uppercase">
-            {badgeText}
-          </span>
+        <div className="absolute top-2 left-2 flex flex-col gap-2">
+          {(availableSlots !== undefined || availability) && (
+            <span className={`text-xs px-3 py-1 rounded-full bg-white/90 backdrop-blur shadow-sm font-medium ${smartStatusColor}`}>
+              {smartStatusText}
+            </span>
+          )}
         </div>
       </div>
 
       {/* Content Body */}
-      <div className="py-3 pr-4 sm:pr-5 flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col flex-1 min-w-0 justify-between py-1">
         
         {/* Top Header Section */}
-        <div className="mb-2">
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <span className="text-gray-500 text-[13px] font-medium tracking-wide truncate max-w-[150px]">{location}</span>
-            {distance !== null && distance < 2.0 && (
-              <span className="px-2.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
-                Near you
-              </span>
-            )}
-            {distance !== null && (
-              <span className="text-gray-400 text-[12px] font-medium ml-auto">
-                {distance.toFixed(1)} km away
-              </span>
-            )}
-          </div>
-          <h3 className="text-[18px] sm:text-[20px] font-semibold text-gray-900 leading-snug tracking-tight line-clamp-2 pr-2">{title}</h3>
-          <div className="flex items-center gap-1.5 mt-1.5 mb-2">
-            <span className="flex items-center text-[13px] font-semibold text-gray-900">
-              <svg className="w-4 h-4 text-amber-400 mr-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 truncate">{title}</h3>
+          <p className="text-sm text-gray-500 mt-1 truncate">{location}</p>
+          
+          <div className="flex items-center gap-2 mt-2 text-sm text-gray-700">
+            <span className="flex items-center font-semibold text-gray-900">
+              <svg className="w-3 h-3 text-amber-400 mr-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
               {title.length % 2 === 0 ? "4.8" : "4.9"}
             </span>
-            <span className="text-gray-400 text-[12px]">({100 + (title.length * 3)} reviews)</span>
+            {totalSlots !== undefined && (
+              <>
+                <span className="text-gray-300">•</span>
+                <span className="text-sm text-gray-400">Cap: {totalSlots}</span>
+              </>
+            )}
           </div>
-          
-          <div className="w-8 h-[1px] bg-gray-200 my-4"></div>
-          
-          <p className="text-[14px] text-gray-600 leading-relaxed line-clamp-1">
-            Secure • 24/7 Access • Instant Booking
-          </p>
         </div>
 
+        <div className="h-px bg-gray-100 my-2" />
+
         {/* Bottom Footer: Price & Action */}
-        <div className="mt-auto flex items-end justify-between px-1">
-          <div className="flex items-baseline gap-1">
-            <span className="text-[22px] sm:text-[26px] font-bold text-gray-900 tracking-tight">₹{price}</span>
-            <span className="text-[14px] text-gray-500 font-medium">/ hour</span>
-          </div>
+        <div className="flex justify-between items-center mt-1">
+          <p className="text-xl font-bold text-gray-900 whitespace-nowrap">
+            ₹{price} <span className="text-sm text-gray-500 ml-1 font-normal">/ hour</span>
+          </p>
           
           <motion.button
             onClick={handleBookNow}
             disabled={loading || isFull}
-            whileHover={!(loading || isFull) ? { scale: 1.01 } : {}}
-            whileTap={!(loading || isFull) ? { scale: 0.98 } : {}}
-            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-            className={`px-6 py-2.5 text-white text-[14px] font-medium rounded-xl btn-ripple ${
-              loading || isFull
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
-                : 'bg-blue-600 hover:bg-blue-700 btn-glow'
+            whileHover={!(loading || isFull) ? { scale: 1.03 } : {}}
+            whileTap={!(loading || isFull) ? { scale: 0.95 } : {}}
+            transition={{ duration: 0.2 }}
+            className={`px-5 py-2 text-sm whitespace-nowrap rounded-lg transition-all duration-200 ${
+              loading 
+                ? 'bg-gradient-to-r from-blue-400 to-blue-400 cursor-wait shadow-none text-white'
+                : isFull
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none'
+                  : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:shadow-lg text-white font-medium shadow-md'
             }`}
           >
             {loading ? (
               <span className="flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
                 Booking...
               </span>
-            ) : 'Book Now'}
+            ) : isFull ? (
+              'Full'
+            ) : (
+              'Book Now'
+            )}
           </motion.button>
         </div>
       </div>

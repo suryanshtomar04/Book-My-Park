@@ -20,6 +20,13 @@ const createBooking = async (userId, parkingId, startTime, endTime) => {
     throw new AppError("Parking spot is already booked for the requested time slot", 409);
   }
 
+  if (parking.availableSlots <= 0) {
+    throw new AppError("Parking Full", 400);
+  }
+
+  parking.availableSlots -= 1;
+  await parking.save();
+
   const durationHours = (end - start) / (1000 * 60 * 60);
   const totalPrice = Math.round(durationHours * parking.pricePerHour * 100) / 100;
 
