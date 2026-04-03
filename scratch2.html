@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="relative w-full h-[800px] bg-white overflow-hidden">
+    <!-- Overlay image reference -->
+    <!-- We can't actually overlay the user's screenshot without an image, so we'll just try an alternative shape -->
+    <svg width="0" height="0" class="absolute">
+      <defs>
+        <clipPath id="heroCurve1" clipPathUnits="objectBoundingBox">
+          <path d="
+            M 0.35 0 
+            L 1 0 
+            L 1 1 
+            L 0 1 
+            C 0.05 0.8, 0.1 0.4, 0.35 0 
+            Z
+          " />
+        </clipPath>
+        <clipPath id="heroCurve2" clipPathUnits="objectBoundingBox">
+          <path d="
+            M 0.2 0 
+            L 1 0 
+            L 1 1 
+            L 0.1 1 
+            C 0.05 0.7, 0.05 0.3, 0.2 0 
+            Z
+          " />
+        </clipPath>
+      </defs>
+    </svg>
+
+    <!-- Curve 1 -->
+    <div class="absolute top-0 right-[400px] w-[55%] h-full z-0 opacity-50">
+      <img src="https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=2666&auto=format&fit=crop" class="w-full h-full object-cover" style="clip-path: url(#heroCurve1)" />
+    </div>
+    
+    <!-- Curve 2 -->
+    <div class="absolute top-0 right-0 w-[55%] h-full z-0 opacity-50">
+      <img src="https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=2666&auto=format&fit=crop" class="w-full h-full object-cover" style="clip-path: url(#heroCurve2)" />
+    </div>
+  </div>
+</body>
+</html>

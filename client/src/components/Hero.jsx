@@ -7,11 +7,42 @@ export default function Hero() {
   const { user } = useAuth();
 
   return (
-    <div className="relative w-full min-h-screen bg-white flex flex-col lg:block">
-      
-      {/* LEFT SIDE: Content & Messaging */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:min-h-screen flex items-center pt-32 pb-16 lg:py-0">
-        <div className="w-full lg:w-[50%] lg:pr-16">
+    <div className="relative w-full min-h-screen overflow-hidden">
+
+      {/* ── SVG clip-path definition (hidden, zero-size) ── */}
+      <svg width="0" height="0" className="absolute">
+        <defs>
+          <clipPath id="heroCurve" clipPathUnits="objectBoundingBox">
+            <path d="
+              M 0.18 0
+              L 1 0
+              L 1 1
+              L 0 1
+              C 0.04 0.78, 0.07 0.38, 0.18 0
+              Z
+            " />
+          </clipPath>
+        </defs>
+      </svg>
+
+      {/* ── DESKTOP: Smooth organic curved image ── */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
+        className="hidden lg:block absolute top-0 right-0 w-[55%] h-full z-0"
+      >
+        <img 
+          src="https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=2666&auto=format&fit=crop" 
+          alt="Bright Premium Parking" 
+          className="w-full h-full object-cover"
+          style={{ clipPath: 'url(#heroCurve)' }}
+        />
+      </motion.div>
+
+      {/* ── LEFT SIDE: Content & Messaging ── */}
+      <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen flex items-center pt-32 pb-16 lg:py-0">
+        <div className="w-full lg:w-[45%] lg:pr-16">
           
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -89,7 +120,7 @@ export default function Hero() {
                <div className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-gray-700 bg-gray-100 shadow-sm relative z-20">
                 <img src="https://i.pravatar.cc/150?img=12" alt="Driver" className="w-full h-full rounded-full object-cover" />
                </div>
-               <div className="w-8 h-8 rounded-full bg-blue-50 border-2 border-white flex items-center justify-center text-[10px] font-bold text-blue-700 shadow-sm relative z-101">10k+</div>
+               <div className="w-8 h-8 rounded-full bg-blue-50 border-2 border-white flex items-center justify-center text-[10px] font-bold text-blue-700 shadow-sm relative z-10">10k+</div>
             </div>
             <span>Trusted by 10,000+ drivers</span>
           </motion.div>
@@ -97,44 +128,16 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* RIGHT SIDE: Clean Rounded Image */}
-      <motion.div
-        initial={{ opacity: 0, x: 40 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        className="w-full lg:absolute lg:top-0 lg:bottom-0 lg:right-0 lg:w-[50%] h-[40vh] sm:h-[50vh] lg:h-full mt-6 lg:mt-0 overflow-hidden lg:overflow-visible pointer-events-none z-0"
-      >
-        
-        {/* Desktop Diagonal Wrapper */}
-        <div 
-          className="hidden lg:block absolute top-0 bottom-0 right-[0] left-[-15%] rounded-bl-[80px] shadow-2xl overflow-hidden pointer-events-auto"
-          style={{ transform: 'skewX(10deg)', transformOrigin: 'top right' }}
-        >
-          <img 
+      {/* ── MOBILE: Image below content ── */}
+      <div className="lg:hidden w-full h-[40vh] sm:h-[50vh] px-4 sm:px-6 pb-6">
+        <div className="w-full h-full rounded-3xl shadow-xl overflow-hidden relative">
+           <img 
             src="https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=2666&auto=format&fit=crop" 
-            alt="Bright Premium Parking" 
-            className="absolute inset-0 w-full h-full object-cover object-[75%_center]"
-            style={{ transform: 'skewX(-10deg) scale(1.15)', transformOrigin: 'top right' }}
-          />
-          <div 
-            className="absolute inset-y-0 left-0 w-[40%] bg-gradient-to-r from-white/80 via-white/20 to-transparent pointer-events-none"
-            style={{ transform: 'skewX(-10deg) scale(1.15)', transformOrigin: 'top right' }}
+            alt="Premium Parking Location" 
+            className="w-full h-full object-cover object-center"
           />
         </div>
-
-        {/* Mobile Variant */}
-        <div className="lg:hidden w-full h-full px-4 sm:px-6 pb-6 relative">
-          <div className="w-full h-full rounded-3xl shadow-xl overflow-hidden pointer-events-auto relative">
-             <img 
-              src="https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=2666&auto=format&fit=crop" 
-              alt="Premium Parking Location" 
-              className="w-full h-full object-cover object-center pointer-events-none"
-            />
-            <div className="absolute top-0 left-0 right-0 h-[40%] bg-gradient-to-b from-white/60 to-transparent pointer-events-none" />
-          </div>
-        </div>
-
-      </motion.div>
+      </div>
 
     </div>
   );

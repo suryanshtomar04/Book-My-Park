@@ -9,6 +9,16 @@ const streamifier = require("streamifier");
  */
 const uploadToCloudinary = (fileBuffer, folder = "car_parking") => {
   return new Promise((resolve, reject) => {
+    // BYPASS: If API key is missing or is the placeholder, return a default image
+    const config = cloudinary.config();
+    if (!config.api_key || config.api_key === 'your_api_key') {
+      console.warn("Cloudinary API key is missing or is placeholder. Bypassing upload and using a placeholder image.");
+      return resolve({
+        url: "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?q=80&w=1000&auto=format&fit=crop", // generic parking image
+        public_id: "placeholder_" + Date.now(),
+      });
+    }
+
     const stream = cloudinary.uploader.upload_stream(
       {
         folder,

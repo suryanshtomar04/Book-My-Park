@@ -1,0 +1,26 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
+export default function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    // Reset window scroll
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    // Handle delayed rendering
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 50);
+
+    // Handle custom scroll container
+    const container = document.querySelector("#main-scroll");
+    if (container) {
+      container.scrollTop = 0;
+    }
+  }, [pathname]);
+
+  return null;
+}

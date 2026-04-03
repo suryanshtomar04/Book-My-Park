@@ -139,6 +139,12 @@ const defaultParkings = [
   },
 ];
 
+const dummyImages = [
+  "/images/parking1.jpg",
+  "/images/parking2.jpg",
+  "/images/parking3.jpg",
+  "/images/parking4.jpg"
+];
 
 export default function Explore() {
   const { lat, lng, address, loading: locationLoading } = useLocation();
@@ -171,12 +177,16 @@ export default function Explore() {
     fetchParkings();
   }, [lat, lng, address, locationLoading, routerLocation.key]);
 
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   // Merge defaults + real backend data, filtering out defaults that clash
-  const backendIds = new Set(parkings.map(p => p._id));
-  const displayParkings = [
-    ...defaultParkings.filter(d => !backendIds.has(d._id)),
-    ...parkings,
-  ];
+  const displayParkings = useMemo(() => {
+    const backendIds = new Set(parkings.map(p => p._id));
+    return [
+      ...defaultParkings.filter(d => !backendIds.has(d._id)),
+      ...parkings,
+    ];
+  }, [parkings]);
 
   const getDistance = useCallback((parking) => {
     const pLng = parking.location?.coordinates?.[0];
@@ -200,9 +210,12 @@ export default function Explore() {
 
   // Center on first parking if exists, else fallback
   const firstCoords = sortedParkings[0]?.location?.coordinates;
-  const center = firstCoords
-    ? [firstCoords[1], firstCoords[0]]
-    : DEFAULT_CENTER;
+  let center = DEFAULT_CENTER;
+  if (firstCoords && typeof firstCoords[0] === 'number' && typeof firstCoords[1] === 'number') {
+    if (!isNaN(firstCoords[0]) && !isNaN(firstCoords[1])) {
+      center = [firstCoords[1], firstCoords[0]];
+    }
+  }
 
   // When a marker is clicked → scroll to corresponding card
   const handleMarkerClick = useCallback((parkingId) => {
@@ -230,11 +243,22 @@ export default function Explore() {
     setHoveredParkingId(null);
   }, []);
 
+  const getImageUrl = (imagePath, id) => {
+    if (!imagePath) {
+      if (!id) return dummyImages[0];
+      // Generate a stable cross-session semi-random index based on ID string
+      const numCode = id.toString().split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      return dummyImages[numCode % dummyImages.length];
+    }
+    if (imagePath.startsWith('http')) return imagePath;
+    return `${BASE_URL}${imagePath}`;
+  };
+
   return (
     <div className="flex w-full h-screen bg-[#F8FAFC] overflow-hidden">
       
       {/* Left Side: Parking Listings (45%) */}
-      <div className="w-[45%] h-full overflow-y-auto scroll-smooth bg-white flex-shrink-0 hide-scrollbar relative z-10 shadow-lg border-r border-gray-100">
+      <div id="main-scroll" className="w-[45%] h-full overflow-y-auto scroll-smooth bg-white flex-shrink-0 hide-scrollbar relative z-10 shadow-lg border-r border-gray-100">
         
         <div className="w-full">
           
@@ -280,7 +304,7 @@ export default function Explore() {
                   const distance = (lat && lng && pLat && pLng) 
                     ? calculateDistance(lat, lng, pLat, pLng)
                     : null;
-                    
+                  
                   return (
                     <div key={parking._id}>
                       <ParkingCard
@@ -292,7 +316,6 @@ export default function Explore() {
                         availableSlots={parking.availableSlots}
                         totalSlots={parking.totalSlots}
                         distance={distance}
-                        image={parking.images?.[0] || 'https://images.unsplash.com/photo-1590674899484-ac33d3c80cd8?q=80&w=800&auto=format&fit=crop'}
                         isActive={activeParkingId === parking._id}
                         isHovered={hoveredParkingId === parking._id}
                         onClick={() => handleCardClick(parking._id)}
@@ -310,14 +333,25 @@ export default function Explore() {
       </div>
 
       {/* Right Side: Leaflet Map View (55%) */}
-      <div className="w-[55%] h-full relative z-0">
-        <MapContainer 
-          center={center} 
-          zoom={14} 
-          scrollWheelZoom={true} 
-          className="w-full h-full"
-          zoomControl={false}
-        >
+      <div className="w-[55%] h-full relative z-0 bg-[#F1F5F9]">
+        {loading || locationLoading ? (
+          <div className="w-full h-full flex items-center justify-center flex-col gap-3 text-gray-400">
+            <svg className="w-6 h-6 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+            <p className="font-medium">Loading Map Data...</p>
+          </div>
+        ) : displayParkings.length === 0 ? (
+          <div className="w-full h-full flex items-center justify-center flex-col gap-3 text-gray-400">
+            <svg className="w-10 h-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <p className="font-medium">No map data available.</p>
+          </div>
+        ) : (
+          <MapContainer 
+            center={center} 
+            zoom={14} 
+            scrollWheelZoom={true} 
+            className="w-full h-full"
+            zoomControl={false}
+          >
           {/* Map logical updaters */}
           <MapFlyToUpdater 
             activeParkingId={activeParkingId} 
@@ -338,6 +372,10 @@ export default function Explore() {
               if (!parking.location || !parking.location.coordinates) return null;
               let [lng, lat] = parking.location.coordinates;
               
+              if (typeof lng !== 'number' || typeof lat !== 'number' || isNaN(lng) || isNaN(lat)) {
+                return null;
+              }
+              
               const key = `${lat},${lng}`;
               const offsetIdx = coordsCount[key] || 0;
               coordsCount[key] = offsetIdx + 1;
@@ -352,7 +390,7 @@ export default function Explore() {
               
               return (
                 <Marker 
-                  key={`marker-${parking._id}-${offsetIdx}`} 
+                  key={parking._id} 
                   position={[lat, lng]}
                   icon={isHighlighted ? highlightedIcon : customIcon}
                   zIndexOffset={isHighlighted ? 1000 : 0}
@@ -390,6 +428,7 @@ export default function Explore() {
             });
           })()}
         </MapContainer>
+        )}
       </div>
       
     </div>

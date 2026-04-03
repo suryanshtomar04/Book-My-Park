@@ -16,7 +16,9 @@ const app = express();
 
 // ──────────────── Global Middleware & Security ────────────────
 // Set security HTTP headers
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}));
 
 // Development logging
 if (process.env.NODE_ENV === "development") {
@@ -38,6 +40,10 @@ app.use("/api", limiter);
 app.use(cors({ origin: process.env.CORS_ORIGIN || "*" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from the public folder
+const path = require("path");
+app.use(express.static(path.join(__dirname, "public")));
 
 // ──────────────── Routes ────────────────
 app.use("/api/health", healthRoutes);

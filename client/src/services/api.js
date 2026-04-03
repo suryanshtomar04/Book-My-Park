@@ -55,20 +55,35 @@ export const registerUser = async (userData) => {
 };
 
 export const getAllParking = async () => {
-  const response = await api.get('/parking');
-  return response.data;
+  try {
+    const response = await api.get('/parking');
+    return response.data;
+  } catch (error) {
+    console.error('[API Error] getAllParking:', error.message);
+    return { data: [] };
+  }
 };
 
 export const getNearbyParking = async (lat, lng) => {
-  const response = await api.get('/parking/nearby', {
-    params: { lat, lng },
-  });
-  return response.data;
+  try {
+    const response = await api.get('/parking/nearby', {
+      params: { lat, lng },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('[API Error] getNearbyParking:', error.message);
+    return { data: [] };
+  }
 };
 
 export const getParkingById = async (id) => {
-  const response = await api.get(`/parking/${id}`);
-  return response.data;
+  try {
+    const response = await api.get(`/parking/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('[API Error] getParkingById:', error.message);
+    return null;
+  }
 };
 
 export const createBooking = async (bookingData) => {
@@ -79,8 +94,13 @@ export const createBooking = async (bookingData) => {
 
 export const getUserBookings = async () => {
   console.log('[API] GET /booking/my');
-  const response = await api.get('/booking/my');
-  return response.data;
+  try {
+    const response = await api.get('/booking/my');
+    return response.data;
+  } catch (error) {
+    console.error('[API Error] getUserBookings:', error.message);
+    return { data: [] };
+  }
 };
 
 export const createParking = async (formData) => {

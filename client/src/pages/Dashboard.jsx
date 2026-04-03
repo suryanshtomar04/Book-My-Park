@@ -98,11 +98,7 @@ export default function Dashboard() {
     }
   }, [isAuthenticated, logout, navigate]);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
+
 
   const getBookingStatus = (endTime) => {
     if (!endTime) return 'Active';
@@ -330,8 +326,16 @@ export default function Dashboard() {
                   >
                     
                     <div className="p-6 md:pl-8 flex-grow flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                      <div>
-                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                      <div className="flex gap-4 flex-col sm:flex-row">
+                        <div className="w-full sm:w-32 h-40 sm:h-24 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
+                          <img
+                            src={booking.parkingId?.images?.[0] ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${booking.parkingId.images[0]}` : '/images/parking1.jpg'}
+                            alt={parkingName}
+                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2 flex-wrap">
                           <span className={`px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide
                             ${isActive ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-gray-100 text-gray-500 border border-gray-200'}`}
                           >
@@ -367,6 +371,7 @@ export default function Dashboard() {
                             <span className="font-medium text-gray-900 block">{formatDate(booking.endTime)}</span>
                             {isActive && getTimeRemaining(booking.endTime) && <span className="text-[11px] text-orange-500 font-medium mt-0.5 block">{getTimeRemaining(booking.endTime)}</span>}
                           </div>
+                        </div>
                         </div>
                       </div>
 

@@ -40,9 +40,9 @@ const createParking = catchAsync(async (req, res, next) => {
 
   let imageUrls = [];
   if (req.files && req.files.length > 0) {
-    const buffers = req.files.map((f) => f.buffer);
-    const results = await uploadMultiple(buffers);
-    imageUrls = results.map((r) => r.url);
+    // Files are already saved by multer diskStorage
+    // Store relative URL path
+    imageUrls = req.files.map((f) => `/uploads/${f.filename}`);
   }
 
   const parkingData = { 

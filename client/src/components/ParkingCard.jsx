@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 
 const ParkingCard = forwardRef(({ 
   id = 'preview', 
-  image = 'https://images.unsplash.com/photo-1590674899484-ac33d3c80cd8?q=80&w=800&auto=format&fit=crop', 
+  image = '/images/parking.jpg', 
   title = 'Premium Parking Space',
   location = '123 Main St, City Center',
   price = 50,
@@ -102,6 +102,21 @@ const ParkingCard = forwardRef(({
 
   const isFull = availableSlots !== undefined ? availableSlots === 0 : availability?.toLowerCase() === 'full';
 
+  const getParkingImage = (title) => {
+    if (!title) return "/images/parking1.jpg";
+
+    const t = title.toLowerCase().trim();
+
+    if (t.includes("highway")) return "/images/parking1.jpg";
+    if (t.includes("modinagar")) return "/images/parking2.jpg";
+    if (t.includes("city")) return "/images/parking3.jpg";
+
+    return "/images/parking1.jpg";
+  };
+
+  console.log("TITLE:", title);
+  console.log("IMG:", getParkingImage(title));
+
   return (
     <motion.div
       ref={ref}
@@ -124,12 +139,13 @@ const ParkingCard = forwardRef(({
     >
       
       {/* Image Container */}
-      <div className="relative w-full sm:w-[280px] xl:w-[320px] h-[200px] sm:h-full overflow-hidden rounded-[1rem] bg-gray-100 flex-shrink-0">
+      <div className="relative w-full sm:w-[280px] xl:w-[320px] h-[200px] sm:h-full aspect-[4/3] overflow-hidden rounded-xl bg-gray-100 flex-shrink-0">
         <img 
-          src={image} 
+          src={getParkingImage(title)} 
           alt={title} 
-          className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-out"
+          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
         {/* Availability Badge */}
         <div className={`absolute top-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5 border border-gray-100 ${badgeTextColor}`}>
           <span className={`w-2 h-2 rounded-full ${badgeColor} ${pulseClass}`}></span>

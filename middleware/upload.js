@@ -1,7 +1,17 @@
 const multer = require("multer");
 
-// Use memory storage — files stay as buffers, streamed directly to Cloudinary
-const storage = multer.memoryStorage();
+const path = require("path");
+
+// Use disk storage to save files locally in public/uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../public/uploads"));
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname));
+  },
+});
 
 const fileFilter = (_req, file, cb) => {
   const allowed = ["image/jpeg", "image/png", "image/webp", "image/jpg"];

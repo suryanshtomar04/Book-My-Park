@@ -81,7 +81,7 @@ export default function Home() {
   const blobY5 = useTransform(scrollY, [0, 3000], [0, -250]);
 
   return (
-    <div className="flex flex-col min-h-screen relative">
+    <div className="flex flex-col min-h-screen relative overflow-x-hidden">
       
       {/* ══════ ALIVE BACKGROUND LAYER ══════ */}
       <div className="fixed inset-0 bg-white z-0" aria-hidden="true" />

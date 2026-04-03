@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="relative w-full h-[800px] bg-white overflow-hidden">
+    <!-- SVG Definition -->
+    <svg width="0" height="0" class="absolute">
+      <defs>
+        <clipPath id="heroCurve" clipPathUnits="objectBoundingBox">
+          <path d="
+            M 0.15 0 
+            L 1 0 
+            L 1 1 
+            L 0.15 1 
+            C -0.05 0.7, -0.05 0.3, 0.15 0 
+            Z
+          " />
+        </clipPath>
+      </defs>
+    </svg>
+
+    <div class="absolute top-0 right-0 w-[55%] h-full z-0">
+      <img src="https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=2666&auto=format&fit=crop" class="w-full h-full object-cover" style="clip-path: url(#heroCurve)" />
+    </div>
+  </div>
+</body>
+</html>
