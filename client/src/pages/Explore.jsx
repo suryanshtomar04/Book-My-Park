@@ -305,8 +305,11 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
                     ? calculateDistance(lat, lng, pLat, pLng)
                     : null;
                   
-                  const imageUrl = parking.images?.[0]
-                    ? `http://localhost:5000${parking.images[0]}`
+                  const rawImage = parking.images?.[0];
+                  const imageUrl = rawImage
+                    ? rawImage.startsWith("http")
+                      ? rawImage
+                      : `http://localhost:5000${rawImage}`
                     : null;
 
                   return (

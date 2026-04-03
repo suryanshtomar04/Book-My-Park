@@ -49,7 +49,8 @@ const ParkingCard = forwardRef(({
         _id: Date.now().toString(),
         parkingId: {
           description: title,
-          location: { address: location }
+          location: { address: location },
+          images: image ? [image.replace('http://localhost:5000', '')] : []
         },
         startTime: now.toISOString(),
         endTime: oneHourLater.toISOString(),

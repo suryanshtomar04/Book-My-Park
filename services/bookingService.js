@@ -32,7 +32,7 @@ const createBooking = async (userId, parkingId, startTime, endTime) => {
   });
 
   await booking.populate([
-    { path: "parkingId", select: "location pricePerHour description" },
+    { path: "parkingId", select: "title location pricePerHour description images" },
     { path: "userId", select: "name email" },
   ]);
 
@@ -41,7 +41,7 @@ const createBooking = async (userId, parkingId, startTime, endTime) => {
 
 const getMyBookings = async (userId) => {
   return await Booking.find({ userId })
-    .populate("parkingId", "location pricePerHour description images")
+    .populate("parkingId", "title location pricePerHour description images")
     .sort({ createdAt: -1 });
 };
 
@@ -49,7 +49,7 @@ const getUserBookings = async (userId) => {
   return await Booking.find({ userId })
     .populate({
       path: "parkingId",
-      select: "location pricePerHour description images availability",
+      select: "title location pricePerHour description images availability",
       populate: { path: "ownerId", select: "name email" },
     })
     .populate("userId", "name email")
@@ -61,7 +61,7 @@ const getOwnerBookings = async (ownerId) => {
   const spotIds = ownerSpots.map((s) => s._id);
 
   return await Booking.find({ parkingId: { $in: spotIds } })
-    .populate("parkingId", "location pricePerHour description images")
+    .populate("parkingId", "title location pricePerHour description images")
     .populate("userId", "name email")
     .sort({ createdAt: -1 });
 };

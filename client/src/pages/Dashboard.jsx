@@ -319,8 +319,11 @@ export default function Dashboard() {
                 const location = booking.parkingId?.location?.address || '123 Main Street, City Center';
                 const isNew = newBookingId === (booking._id || booking.id);
 
-                const imageUrl = booking.parkingId?.images?.[0]
-                  ? `http://localhost:5000${booking.parkingId.images[0]}`
+                const rawImage = booking.parkingId?.images?.[0];
+                const imageUrl = rawImage
+                  ? rawImage.startsWith("http")
+                    ? rawImage
+                    : `http://localhost:5000${rawImage}`
                   : null;
                   
                 const finalImage = imageUrl || getParkingImage(parkingName);

@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { createParking } from '../services/api';
@@ -135,21 +136,27 @@ export default function AddParking() {
         ownerId: user?.id || 'dev-admin',
       };
 
-      const fd = new FormData();
-      fd.append('title', payload.title);
-      fd.append('location', JSON.stringify(payload.location));
-      fd.append('pricePerHour', String(payload.pricePerHour));
-      fd.append('totalSlots', String(payload.totalSlots));
-      fd.append('availableSlots', String(payload.availableSlots));
-      fd.append('availability', JSON.stringify(payload.availability));
-      fd.append('description', description.trim());
-      fd.append('ownerId', payload.ownerId);
+      const formData = new FormData();
+      formData.append('title', payload.title);
+      formData.append('location', JSON.stringify(payload.location));
+      formData.append('pricePerHour', String(payload.pricePerHour));
+      formData.append('totalSlots', String(payload.totalSlots));
+      formData.append('availableSlots', String(payload.availableSlots));
+      formData.append('availability', JSON.stringify(payload.availability));
+      formData.append('description', description.trim());
+      formData.append('ownerId', payload.ownerId);
 
       if (image) {
-        fd.append('images', image);
+        formData.append('images', image);
       }
 
-      await createParking(fd);
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/parking`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Authorization": `Bearer ${user?.token || localStorage.getItem('token') || 'dev-admin-token'}`
+        },
+      });
+
       navigate('/explore');
     } catch (err) {
       console.error('Submission error:', err);
