@@ -1,5 +1,7 @@
 const catchAsync = require("../utils/catchAsync");
 const bookingService = require("../services/bookingService");
+const Booking = require("../models/Booking");
+const Parking = require("../models/Parking");
 
 /**
  * @desc    Book a parking spot
@@ -86,4 +88,47 @@ const cancelBooking = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { createBooking, getMyBookings, getUserBookings, getOwnerBookings, cancelBooking };
+/**
+ * @desc    End an active booking
+ * @route   PUT /api/booking/:id/end
+ * @access  Private — booking owner
+ */
+const endBooking = async (req, res) => {
+  try {
+    console.log("Ending booking:", req.params.id);
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // prevent double ending
+    if (booking.status === "completed") {
+      return res.status(400).json({ message: "Already ended" });
+    }
+
+    booking.status = "completed";
+    await booking.save();
+
+    // update parking slots
+    const parking = await Parking.findById(booking.parkingId);
+
+    if (parking) {
+      parking.availableSlots += 1;
+
+      if (parking.availableSlots > parking.totalSlots) {
+        parking.availableSlots = parking.totalSlots;
+      }
+
+      await parking.save();
+    }
+
+    res.json({ message: "Booking ended successfully" });
+
+  } catch (error) {
+    console.error("End booking error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = { createBooking, getMyBookings, getUserBookings, getOwnerBookings, cancelBooking, endBooking };

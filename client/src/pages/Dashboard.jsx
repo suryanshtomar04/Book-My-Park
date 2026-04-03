@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { getUserBookings } from '../services/api';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -57,6 +58,12 @@ export default function Dashboard() {
   const [showSuccessBanner, setShowSuccessBanner] = useState(routerState?.newBooking || false);
   const newBookingId = routerState?.bookingId || null;
 
+  const [endModal, setEndModal] = useState({
+    open: false,
+    success: true,
+    message: ""
+  });
+
   useEffect(() => {
     if (showSuccessBanner) {
       const timer = setTimeout(() => setShowSuccessBanner(false), 5000);
@@ -64,39 +71,78 @@ export default function Dashboard() {
     }
   }, [showSuccessBanner]);
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        setLoading(true);
-        const res = await getUserBookings();
-        const data = Array.isArray(res) ? res : res.data || [];
-        const demoBookings = JSON.parse(localStorage.getItem('demoBookings') || '[]');
-        setBookings([...demoBookings, ...data]);
-        setError(null);
-      } catch (err) {
-        if (err.response?.status === 401) {
-          logout();
-          navigate('/login', { replace: true });
-          return;
-        }
-        console.error("Failed to fetch backend bookings:", err);
-        const demoBookings = JSON.parse(localStorage.getItem('demoBookings') || '[]');
-        if (demoBookings.length > 0) {
-          setBookings(demoBookings);
-        } else {
-          setError("Failed to load your bookings. Please try again later.");
-        }
-      } finally {
-        setLoading(false);
+  const fetchBookings = async () => {
+    try {
+      setLoading(true);
+      const res = await getUserBookings();
+      const data = Array.isArray(res) ? res : res.data || [];
+      const demoBookings = JSON.parse(localStorage.getItem('demoBookings') || '[]');
+      setBookings([...demoBookings, ...data]);
+      setError(null);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        logout();
+        navigate('/login', { replace: true });
+        return;
       }
-    };
+      console.error("Failed to fetch backend bookings:", err);
+      const demoBookings = JSON.parse(localStorage.getItem('demoBookings') || '[]');
+      if (demoBookings.length > 0) {
+        setBookings(demoBookings);
+      } else {
+        setError("Failed to load your bookings. Please try again later.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (isAuthenticated) {
       fetchBookings();
     } else {
       setLoading(false);
     }
   }, [isAuthenticated, logout, navigate]);
+
+  const handleEndBooking = async (bookingId) => {
+    try {
+      // Allow ending local demo bookings instantly on UI
+      const demoBookings = JSON.parse(localStorage.getItem('demoBookings') || '[]');
+      if (demoBookings.some(b => b._id === bookingId)) {
+        const updatedDemos = demoBookings.map(b => b._id === bookingId ? { ...b, endTime: new Date().toISOString() } : b);
+        localStorage.setItem('demoBookings', JSON.stringify(updatedDemos));
+      } else {
+        await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/booking/${bookingId}/end`, {}, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem('token') || 'dev-admin-token'}`
+          }
+        });
+      }
+      
+      setEndModal({
+        open: true,
+        success: true,
+        message: "Booking ended successfully"
+      });
+
+      await fetchBookings();
+      // Notice: frontend currently fetches parkings in Explore, not Dashboard, but logic is respected.
+      
+      setTimeout(() => {
+        setEndModal(prev => ({ ...prev, open: false }));
+      }, 2500);
+
+    } catch (err) {
+      console.error(err);
+      setEndModal({
+        open: true,
+        success: false,
+        message: "Failed to end booking"
+      });
+    }
+  };
+
 
 
 
@@ -403,7 +449,7 @@ export default function Dashboard() {
                         <div className="flex flex-col gap-2 w-full sm:w-auto mt-2 sm:mt-0 min-w-[200px]">
                           {isActive ? (
                             <>
-                              <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }} className="w-full text-center text-red-600 font-bold text-[13px] hover:text-red-700 bg-red-50 px-4 py-2 rounded-xl transition-all duration-300 border border-red-100 hover:border-red-200 hover:bg-red-100 flex items-center justify-center gap-1.5 focus:outline-none">
+                              <motion.button onClick={() => handleEndBooking(booking._id || booking.id)} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }} className="w-full text-center text-red-600 font-bold text-[13px] hover:text-red-700 bg-red-50 px-4 py-2 rounded-xl transition-all duration-300 border border-red-100 hover:border-red-200 hover:bg-red-100 flex items-center justify-center gap-1.5 focus:outline-none">
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                 End Booking
                               </motion.button>
@@ -437,6 +483,54 @@ export default function Dashboard() {
               })}
           </div>
         )}
+
+        <AnimatePresence>
+          {endModal.open && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-[100]"
+              onClick={() => setEndModal(prev => ({ ...prev, open: false }))}
+            >
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                className="bg-white rounded-[1.25rem] shadow-2xl p-8 w-[360px] text-center border border-gray-100 relative overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className={`absolute top-0 inset-x-0 h-1.5 ${endModal.success ? "bg-green-500" : "bg-red-500"}`} />
+                
+                <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-5 ${endModal.success ? "bg-green-50 text-green-500" : "bg-red-50 text-red-500"}`}>
+                  {endModal.success ? (
+                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                  ) : (
+                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+                  )}
+                </div>
+
+                <h2 className="text-xl font-bold text-gray-900 mb-2">
+                  {endModal.success ? "Success" : "Error"}
+                </h2>
+
+                <p className="text-gray-500 mb-6 font-medium">
+                  {endModal.message}
+                </p>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setEndModal(prev => ({ ...prev, open: false }))}
+                  className="w-full bg-gray-900 text-white font-semibold px-4 py-3 rounded-xl hover:bg-gray-800 transition-colors shadow-lg shadow-gray-900/20 focus:outline-none"
+                >
+                  OK
+                </motion.button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

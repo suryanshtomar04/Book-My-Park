@@ -10,6 +10,7 @@ const {
   getUserBookings,
   getOwnerBookings,
   cancelBooking,
+  endBooking,
 } = require("../controllers/bookingController");
 
 const router = express.Router();
@@ -19,5 +20,6 @@ router.get("/my", protect, getMyBookings);
 router.get("/user", protect, onlyUser, getUserBookings);
 router.get("/owner", protect, onlyAdmin, getOwnerBookings);
 router.patch("/:id/cancel", protect, cancelBooking);
+router.put("/:id/end", protect, endBooking);
 
 module.exports = router;
