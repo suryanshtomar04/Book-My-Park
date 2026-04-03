@@ -150,7 +150,8 @@ export default function AddParking() {
         formData.append('images', image);
       }
 
-      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/parking`, formData, {
+      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      await axios.post(`${BASE_URL}/api/parking`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           "Authorization": `Bearer ${user?.token || localStorage.getItem('token') || 'dev-admin-token'}`

@@ -50,7 +50,7 @@ const ParkingCard = forwardRef(({
         parkingId: {
           description: title,
           location: { address: location },
-          images: image ? [image.replace('http://localhost:5000', '')] : []
+          images: image ? [image.replace(import.meta.env.VITE_API_URL || 'http://localhost:5000', '')] : []
         },
         startTime: now.toISOString(),
         endTime: oneHourLater.toISOString(),

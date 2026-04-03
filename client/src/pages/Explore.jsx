@@ -309,7 +309,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
                   const imageUrl = rawImage
                     ? rawImage.startsWith("http")
                       ? rawImage
-                      : `http://localhost:5000${rawImage}`
+                      : `${BASE_URL}${rawImage}`
                     : null;
 
                   return (

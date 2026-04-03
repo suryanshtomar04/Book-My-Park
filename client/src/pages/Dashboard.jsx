@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { getUserBookings } from '../services/api';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 import AnimatedCounter from '../components/AnimatedCounter';
 import FadeIn from '../components/FadeIn';
 
@@ -113,7 +115,7 @@ export default function Dashboard() {
         const updatedDemos = demoBookings.map(b => b._id === bookingId ? { ...b, endTime: new Date().toISOString() } : b);
         localStorage.setItem('demoBookings', JSON.stringify(updatedDemos));
       } else {
-        await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/booking/${bookingId}/end`, {}, {
+        await axios.put(`${BASE_URL}/api/booking/${bookingId}/end`, {}, {
           headers: {
             "Authorization": `Bearer ${localStorage.getItem('token') || 'dev-admin-token'}`
           }
@@ -369,7 +371,7 @@ export default function Dashboard() {
                 const imageUrl = rawImage
                   ? rawImage.startsWith("http")
                     ? rawImage
-                    : `http://localhost:5000${rawImage}`
+                    : `${BASE_URL}${rawImage}`
                   : null;
                   
                 const finalImage = imageUrl || getParkingImage(parkingName);
